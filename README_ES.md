@@ -8,20 +8,29 @@ Este proyecto provee una API que integra distintos modelos de lenguaje, permitie
 
 Por el momento está integrada con OpenAI y con Groq, este último permite múltiples modelos gratuitos con cierto límite de token, ver documentación en: [Groq](https://console.groq.com/docs/overview)
 
+### Prerequisitos
+
+- Go 1.21 or mayor
+- WhatsApp Business API access token
+- WhatsApp Business número de teléfono
+
 ## 🚀 Instalación
 
 1. Instalar dependencias:
+
 ```bash
 go mod tidy
 ```
 
 3. Configurar las variables de entorno:
+
 ```bash
 cp env.example .env
 # Editar .env con los valores descriptos debajo.
 ```
 
 4. Ejecutar la aplicación:
+
 ```bash
 go run main.go
 ```
@@ -35,7 +44,18 @@ go run main.go
 - `OPENAI_API_KEY`: API key de OpenAI (requerida para usar OpenAI)
 - `GROQ_API_KEY`: API key de Groq (requerida para usar Groq) 
 - `PORT`: Puerto del servidor (por defecto: 8080)
-- `MOCK_MODE`: Modo mock (true) devolverá una respuesta simulada. 
+
+### OpenAI API Setup
+
+1. **Obtener OpenAI API Key:**
+- Crear una cuenta en OpenAI
+- Crear un API Token en OpenAI
+
+### Groq API Setup
+
+1. **Obtener Groq API Key:**
+  - Crear una cuenta en Groq
+  - Crear un API Token en Groq
 
 ## 📡 Endpoints
 
@@ -110,7 +130,8 @@ anyprompt/
 └── README.md             # Este archivo
 ```
 
-## 📝 Licencia
+## BackLog
 
-Este proyecto está bajo la licencia MIT.
+- [ ] Unit Tests
+- [ ] Add others paid LLMs
 

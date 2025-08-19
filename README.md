@@ -49,7 +49,6 @@ Create a `.env` file based on `env.example`:
 - `OPENAI_API_KEY`: OpenAI API key (required for OpenAI)
 - `GROQ_API_KEY`: Groq API key (required for Groq)
 - `PORT`: Server port (default: 8080)
-- `MOCK_MODE`: Mock mode (true will return a simulated response)
 
 ### OpenAI API Setup
 
@@ -57,7 +56,7 @@ Create a `.env` file based on `env.example`:
   - Create an OpenAI account
   - Create an API Token
 
-or 
+### Groq API Setup
 
 1. **Get Groq API Access:**
    - Create a Groq account

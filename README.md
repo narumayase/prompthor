@@ -96,7 +96,7 @@ Checks the API status.
 ```json
 {
   "status": "OK",
-  "message": "AnyPrompt API is running"
+  "message": "anyprompt API is running"
 }
 ```
 

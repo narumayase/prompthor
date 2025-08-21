@@ -27,7 +27,7 @@ func SetupRouter(chatUseCase domain.ChatUseCase) *gin.Engine {
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status":  "OK",
-			"message": "AnyPrompt API is running",
+			"message": "anyprompt API is running",
 		})
 	})
 	return router

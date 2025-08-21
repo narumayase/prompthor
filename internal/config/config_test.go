@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -136,4 +137,155 @@ func TestConfig_PartialEnvironmentVariables(t *testing.T) {
 		assert.Empty(t, config.GroqAPIKey)
 		assert.Equal(t, "openai/gpt-oss-20b", config.ChatModel)
 	})
+}
+
+func TestSetLogLevel(t *testing.T) {
+	tests := []struct {
+		name     string
+		logLevel string
+		expected zerolog.Level
+	}{
+		{
+			name:     "debug level",
+			logLevel: "debug",
+			expected: zerolog.DebugLevel,
+		},
+		{
+			name:     "info level",
+			logLevel: "info",
+			expected: zerolog.InfoLevel,
+		},
+		{
+			name:     "warn level",
+			logLevel: "warn",
+			expected: zerolog.WarnLevel,
+		},
+		{
+			name:     "error level",
+			logLevel: "error",
+			expected: zerolog.ErrorLevel,
+		},
+		{
+			name:     "fatal level",
+			logLevel: "fatal",
+			expected: zerolog.FatalLevel,
+		},
+		{
+			name:     "panic level",
+			logLevel: "panic",
+			expected: zerolog.PanicLevel,
+		},
+		{
+			name:     "uppercase level",
+			logLevel: "DEBUG",
+			expected: zerolog.DebugLevel,
+		},
+		{
+			name:     "mixed case level",
+			logLevel: "WaRn",
+			expected: zerolog.WarnLevel,
+		},
+		{
+			name:     "invalid level defaults to info",
+			logLevel: "invalid",
+			expected: zerolog.InfoLevel,
+		},
+		{
+			name:     "empty level defaults to info",
+			logLevel: "",
+			expected: zerolog.InfoLevel,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Clean up environment
+			os.Unsetenv("LOG_LEVEL")
+			
+			// Set LOG_LEVEL if provided
+			if tt.logLevel != "" {
+				os.Setenv("LOG_LEVEL", tt.logLevel)
+				defer os.Unsetenv("LOG_LEVEL")
+			}
+
+			// Call setLogLevel
+			setLogLevel()
+
+			// Verify the global log level was set correctly
+			actual := zerolog.GlobalLevel()
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestConfig_GroqUrl_Default(t *testing.T) {
+	// Test that GroqUrl has the correct default value
+	os.Unsetenv("GROQ_URL")
+	
+	groqUrl := getEnv("GROQ_URL", "https://api.groq.com/openai/v1/responses")
+	assert.Equal(t, "https://api.groq.com/openai/v1/responses", groqUrl)
+}
+
+func TestConfig_GroqUrl_Custom(t *testing.T) {
+	// Test custom GroqUrl
+	customUrl := "https://custom.groq.api.com/v2/responses"
+	os.Setenv("GROQ_URL", customUrl)
+	defer os.Unsetenv("GROQ_URL")
+	
+	groqUrl := getEnv("GROQ_URL", "https://api.groq.com/openai/v1/responses")
+	assert.Equal(t, customUrl, groqUrl)
+}
+
+func TestLoad_WithEnvFile(t *testing.T) {
+	// Create a temporary .env file for testing
+	envContent := `PORT=3000
+OPENAI_API_KEY=test-openai-key
+GROQ_API_KEY=test-groq-key
+GROQ_URL=https://test.groq.com/api
+CHAT_MODEL=test-model
+LOG_LEVEL=debug`
+
+	// Write temporary .env file
+	err := os.WriteFile(".env", []byte(envContent), 0644)
+	assert.NoError(t, err)
+	defer os.Remove(".env") // Clean up
+
+	// Test Load function
+	config := Load()
+
+	assert.Equal(t, "3000", config.Port)
+	assert.Equal(t, "test-openai-key", config.OpenAIKey)
+	assert.Equal(t, "test-groq-key", config.GroqAPIKey)
+	assert.Equal(t, "https://test.groq.com/api", config.GroqUrl)
+	assert.Equal(t, "test-model", config.ChatModel)
+}
+
+func TestLoad_WithoutEnvFile(t *testing.T) {
+	// Save original working directory
+	originalWd, _ := os.Getwd()
+	
+	// Create a temporary directory for this test
+	tempDir, err := os.MkdirTemp("", "config_test")
+	assert.NoError(t, err)
+	defer os.RemoveAll(tempDir)
+	
+	// Change to temp directory
+	err = os.Chdir(tempDir)
+	assert.NoError(t, err)
+	defer os.Chdir(originalWd)
+	
+	// Clean environment variables
+	envVars := []string{"PORT", "OPENAI_API_KEY", "GROQ_API_KEY", "GROQ_URL", "CHAT_MODEL", "LOG_LEVEL"}
+	for _, env := range envVars {
+		os.Unsetenv(env)
+	}
+
+	// Test Load function with defaults
+	config := Load()
+
+	assert.Equal(t, "8080", config.Port)
+	assert.Empty(t, config.OpenAIKey)
+	assert.Empty(t, config.GroqAPIKey)
+	assert.Equal(t, "https://api.groq.com/openai/v1/responses", config.GroqUrl)
+	assert.Equal(t, "openai/gpt-oss-20b", config.ChatModel)
 }

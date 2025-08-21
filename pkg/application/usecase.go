@@ -2,6 +2,7 @@ package application
 
 import (
 	"anyprompt/pkg/domain"
+	"github.com/rs/zerolog/log"
 )
 
 // ChatUseCaseImpl implements ChatUseCase
@@ -20,6 +21,7 @@ func NewChatUseCase(chatRepo domain.ChatRepository) domain.ChatUseCase {
 func (uc *ChatUseCaseImpl) ProcessChat(prompt string) (string, error) {
 	response, err := uc.chatRepo.SendMessage(prompt)
 	if err != nil {
+		log.Error().Err(err).Msg("Failed to send message")
 		return "", err
 	}
 	return response, nil

@@ -1,37 +1,22 @@
 package infrastructure
 
 import (
-	"anyprompt/internal/infrastructure/client"
 	"anyprompt/pkg/domain"
 	"context"
 	"fmt"
-	"os"
-
 	"github.com/sashabaranov/go-openai"
 )
 
 // OpenAIRepository implements ChatRepository using OpenAI API
 type OpenAIRepository struct {
-	client client.OpenAIClient
+	client OpenAIClient
 }
 
 // NewOpenAIRepository creates a new instance of the OpenAI repository
-func NewOpenAIRepository() (domain.ChatRepository, error) {
-	apiKey := os.Getenv("OPENAI_API_KEY")
-	if apiKey == "" {
-		return nil, fmt.Errorf("OPENAI_API_KEY environment variable is required")
-	}
-
-	return &OpenAIRepository{
-		client: client.NewDefaultOpenAIClient(apiKey),
-	}, nil
-}
-
-// NewOpenAIRepositoryWithClient creates a repository with custom OpenAI client (for testing)
-func NewOpenAIRepositoryWithClient(client client.OpenAIClient) domain.ChatRepository {
+func NewOpenAIRepository(client OpenAIClient) (domain.ChatRepository, error) {
 	return &OpenAIRepository{
 		client: client,
-	}
+	}, nil
 }
 
 // SendMessage sends a message to ChatGPT and returns the response

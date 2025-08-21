@@ -2,11 +2,11 @@ package middleware
 
 import (
 	"anyprompt/pkg/domain"
-	"fmt"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 )
 
 // CORS middleware for handling Cross-Origin Resource Sharing
@@ -25,17 +25,15 @@ func CORS() gin.HandlerFunc {
 // Logger middleware for logging HTTP requests
 func Logger() gin.HandlerFunc {
 	return gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
-		return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
-			param.ClientIP,
-			param.TimeStamp.Format(time.RFC1123),
-			param.Method,
-			param.Path,
-			param.Request.Proto,
-			param.StatusCode,
-			param.Latency,
-			param.Request.UserAgent(),
-			param.ErrorMessage,
-		)
+		log.Info().
+			Str("method", param.Method).
+			Str("path", param.Path).
+			Int("status", param.StatusCode).
+			Dur("latency", param.Latency).
+			Str("client_ip", param.ClientIP).
+			Str("user_agent", param.Request.UserAgent()).
+			Msg("HTTP Request")
+		return ""
 	})
 }
 

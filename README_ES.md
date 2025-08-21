@@ -1,6 +1,8 @@
 # AnyPrompt API
 
-Este proyecto provee una API que integra distintos modelos de lenguaje, permitiendo:
+Este proyecto provee una API que integra múltiples modelos de lenguaje grandes (LLM).
+
+## Características
 
 - Enviar prompts a OpenAI o Groq desde un mismo endpoint.
 - Cambiar dinámicamente el modelo utilizado sin modificar el código cliente.
@@ -10,9 +12,9 @@ Por el momento está integrada con OpenAI y con Groq, este último permite múlt
 
 ### Prerequisitos
 
-- Go 1.21 or mayor
-- WhatsApp Business API access token
-- WhatsApp Business número de teléfono
+- Go 1.21 o mayor
+- API key de OpenAI (opcional, para integración con OpenAI)
+- API key de Groq (opcional, para integración con Groq)
 
 ## 🚀 Instalación
 
@@ -22,14 +24,14 @@ Por el momento está integrada con OpenAI y con Groq, este último permite múlt
 go mod tidy
 ```
 
-3. Configurar las variables de entorno:
+2. Configurar las variables de entorno:
 
 ```bash
 cp env.example .env
 # Editar .env con los valores descriptos debajo.
 ```
 
-4. Ejecutar la aplicación:
+3. Ejecutar la aplicación:
 
 ```bash
 go run main.go
@@ -39,23 +41,28 @@ go run main.go
 
 ### Variables de Entorno
 
-- `CHAT_MODEL`: El modelo de chat a usar, si se elige "OpenAI", utiliza la OpenAI API, sino, utiliza Groq.
-  - ejemplo con Groq: llama-3.3-70b-versatile.
-- `OPENAI_API_KEY`: API key de OpenAI (requerida para usar OpenAI)
-- `GROQ_API_KEY`: API key de Groq (requerida para usar Groq) 
+Crear un archivo `.env` basado en `env.example`:
+
+- `CHAT_MODEL`: Modelo de chat a usar. Si se selecciona "OpenAI", se usa la API de OpenAI; de lo contrario, se usa Groq.
+    - Ejemplo para Groq: llama-3.3-70b-versatile
+    - Por defecto: openai/gpt-oss-20b
+- `OPENAI_API_KEY`: API key de OpenAI (requerida para OpenAI)
+- `GROQ_API_KEY`: API key de Groq (requerida para Groq)
+- `GROQ_URL`: URL de la API de Groq (por defecto: https://api.groq.com/openai/v1/responses)
 - `PORT`: Puerto del servidor (por defecto: 8080)
+- `LOG_LEVEL`: Nivel de log (debug, info, warn, error, fatal, panic - por defecto: info)
 
-### OpenAI API Setup
+### Configuración de OpenAI API
 
-1. **Obtener OpenAI API Key:**
-- Crear una cuenta en OpenAI
-- Crear un API Token en OpenAI
+1. **Obtener acceso a la API de OpenAI:**
+  - Crear una cuenta en OpenAI
+  - Crear un Token de API
 
-### Groq API Setup
+### Configuración de Groq API
 
-1. **Obtener Groq API Key:**
-  - Crear una cuenta en Groq
-  - Crear un API Token en Groq
+1. **Obtener acceso a la API de Groq:**
+   - Crear una cuenta en Groq
+   - Crear un Token de API
 
 ## 📡 Endpoints
 
@@ -89,9 +96,7 @@ Verifica el estado de la API.
 }
 ```
 
-## 🧪 Pruebas
-
-### Con curl:
+#### Usando curl:
 
 ```bash
 # Health check
@@ -103,13 +108,13 @@ curl -X POST http://localhost:8080/api/v1/chat/ask \
   -d '{"prompt": "Cuál es la capital de Francia?"}'
 ```
 
-## 🏗️ Arquitectura
+## 🎗️ Arquitectura
 
 Este proyecto sigue los principios de Clean Architecture:
 
 - **Domain**: Entidades, interfaces de repositorio y casos de uso
 - **Application**: Implementación de casos de uso
-- **Infrastructure**: Implementación del repositorio OpenAI
+- **Infrastructure**: Implementaciones de repositorios de OpenAI y Groq
 - **Interfaces**: Controladores HTTP y routers
 
 ## 📁 Estructura del Proyecto
@@ -118,20 +123,72 @@ Este proyecto sigue los principios de Clean Architecture:
 anyprompt/
 ├── cmd/                  # Puntos de entrada de la aplicación
 │   └── server/           # Servidor principal
-├── pkg/                  # Código reutilizable y público
-│   ├── domain/           # Entidades e interfaces del dominio
-│   └── application/      # Casos de uso
 ├── internal/             # Código específico del proyecto
 │   ├── config/           # Configuración
 │   ├── infrastructure/   # Implementaciones de repositorios
 │   └── interfaces/       # Controladores HTTP
+│       ├── http/         # Controlador handler
+│       └── middleware/   # Middlewares
+├── pkg/                  # Código reutilizable y público
+│   ├── domain/           # Entidades e interfaces del dominio
+│   └── application/      # Casos de uso
 ├── main.go               # Punto de entrada principal
 ├── go.mod                # Dependencias de Go
 └── README.md             # Este archivo
 ```
 
+## 🧪 Pruebas
+
+### Ejecutar Pruebas
+
+Para ejecutar todas las pruebas:
+
+```bash
+go test ./...
+```
+
+Para ejecutar pruebas con salida detallada:
+
+```bash
+go test -v ./...
+```
+
+Para ejecutar pruebas de un paquete específico:
+
+```bash
+go test ./internal/config/
+go test ./cmd/server/
+```
+
+### Cobertura de Pruebas
+
+Para verificar la cobertura de pruebas (excluyendo mocks):
+
+```bash
+# Generar reporte de cobertura
+go test -coverprofile=coverage.out ./...
+
+# Ver reporte de cobertura en terminal
+go tool cover -func=coverage.out
+
+# Generar reporte HTML de cobertura
+go tool cover -html=coverage.out -o coverage.html
+
+# Ver cobertura excluyendo mocks
+go test -coverprofile=coverage.out ./... && \
+go tool cover -func=coverage.out | grep -v "mocks"
+```
+
+### Ejecutar Benchmarks
+
+```bash
+go test -bench=. ./...
+```
+
 ## BackLog
 
-- [ ] Unit Tests
-- [ ] Add others paid LLMs
+- [x] Unit Tests
+- [ ] Agregar otros LLMs de pago
+- [ ] Pruebas de integración
+- [ ] Documentación de API con Swagger
 

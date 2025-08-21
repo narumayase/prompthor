@@ -1,4 +1,4 @@
-package client
+package infrastructure
 
 import (
 	"context"
@@ -11,17 +11,17 @@ type OpenAIClient interface {
 	CreateChatCompletion(ctx context.Context, request openai.ChatCompletionRequest) (openai.ChatCompletionResponse, error)
 }
 
-// DefaultOpenAIClient wraps the standard OpenAI client
-type DefaultOpenAIClient struct {
+// OpenAIClientImpl wraps the standard OpenAI client
+type OpenAIClientImpl struct {
 	client *openai.Client
 }
 
-func NewDefaultOpenAIClient(apiKey string) OpenAIClient {
-	return &DefaultOpenAIClient{
+func NewOpenAIClient(apiKey string) OpenAIClient {
+	return &OpenAIClientImpl{
 		client: openai.NewClient(apiKey),
 	}
 }
 
-func (c *DefaultOpenAIClient) CreateChatCompletion(ctx context.Context, request openai.ChatCompletionRequest) (openai.ChatCompletionResponse, error) {
+func (c *OpenAIClientImpl) CreateChatCompletion(ctx context.Context, request openai.ChatCompletionRequest) (openai.ChatCompletionResponse, error) {
 	return c.client.CreateChatCompletion(ctx, request)
 }

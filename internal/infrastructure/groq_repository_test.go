@@ -18,7 +18,9 @@ func TestNewGroqRepository_Success(t *testing.T) {
 		ChatModel:  "test-model",
 	}
 
-	repo, err := NewGroqRepository(cfg)
+	// Create mock HTTP client
+	mockClient := &mocks.MockHTTPClient{}
+	repo, err := NewGroqRepository(cfg, mockClient)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, repo)
@@ -33,7 +35,9 @@ func TestNewGroqRepository_Success(t *testing.T) {
 func TestNewGroqRepository_EmptyConfig(t *testing.T) {
 	cfg := config.Config{}
 
-	repo, err := NewGroqRepository(cfg)
+	// Create mock HTTP client
+	mockClient := &mocks.MockHTTPClient{}
+	repo, err := NewGroqRepository(cfg, mockClient)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, repo)
@@ -50,7 +54,9 @@ func TestNewGroqRepository_PartialConfig(t *testing.T) {
 		ChatModel:  "",
 	}
 
-	repo, err := NewGroqRepository(cfg)
+	// Create mock HTTP client
+	mockClient := &mocks.MockHTTPClient{}
+	repo, err := NewGroqRepository(cfg, mockClient)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, repo)
@@ -67,7 +73,9 @@ func TestGroqRepository_Structure(t *testing.T) {
 		ChatModel:  "groq-model",
 	}
 
-	repo, err := NewGroqRepository(cfg)
+	// Create mock HTTP client
+	mockClient := &mocks.MockHTTPClient{}
+	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
 	groqRepo, ok := repo.(*GroqRepository)
@@ -98,14 +106,14 @@ func TestGroqRepository_SendMessage_Success(t *testing.T) {
 		]
 	}`)
 
-	mockClient.On("Do", mock.AnythingOfType("*http.Request")).Return(mockResponse, nil)
+	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string")).Return(mockResponse, nil)
 
 	// Create repository with mock client
 	cfg := config.Config{
 		GroqAPIKey: "test-api-key",
 		ChatModel:  "test-model",
 	}
-	repo, err := NewGroqRepositoryWithClient(cfg, mockClient, "https://test-api.com")
+	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
 	// Test the actual SendMessage method
@@ -120,13 +128,13 @@ func TestGroqRepository_SendMessage_HTTPError(t *testing.T) {
 	// Create mock HTTP client that returns HTTP error
 	mockClient := &mocks.MockHTTPClient{}
 
-	mockClient.On("Do", mock.AnythingOfType("*http.Request")).Return((*http.Response)(nil), errors.New("network error"))
+	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string")).Return((*http.Response)(nil), errors.New("network error"))
 
 	cfg := config.Config{
 		GroqAPIKey: "test-api-key",
 		ChatModel:  "test-model",
 	}
-	repo, err := NewGroqRepositoryWithClient(cfg, mockClient, "https://test-api.com")
+	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
 	response, err := repo.SendMessage("Hello world")
@@ -142,13 +150,13 @@ func TestGroqRepository_SendMessage_InvalidJSON(t *testing.T) {
 	mockClient := &mocks.MockHTTPClient{}
 
 	mockResponse := mocks.CreateMockResponse(200, `invalid json`)
-	mockClient.On("Do", mock.AnythingOfType("*http.Request")).Return(mockResponse, nil)
+	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string")).Return(mockResponse, nil)
 
 	cfg := config.Config{
 		GroqAPIKey: "test-api-key",
 		ChatModel:  "test-model",
 	}
-	repo, err := NewGroqRepositoryWithClient(cfg, mockClient, "https://test-api.com")
+	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
 	response, err := repo.SendMessage("Hello world")
@@ -156,4 +164,107 @@ func TestGroqRepository_SendMessage_InvalidJSON(t *testing.T) {
 	assert.Empty(t, response)
 
 	mockClient.AssertExpectations(t)
+}
+
+func TestGroqRepository_SendMessage_EmptyOutput(t *testing.T) {
+	// Create mock HTTP client that returns empty output
+	mockClient := &mocks.MockHTTPClient{}
+
+	mockResponse := mocks.CreateMockResponse(200, `{
+		"id": "test-id",
+		"output": []
+	}`)
+	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string")).Return(mockResponse, nil)
+
+	cfg := config.Config{
+		GroqAPIKey: "test-api-key",
+		ChatModel:  "test-model",
+	}
+	repo, err := NewGroqRepository(cfg, mockClient)
+	assert.NoError(t, err)
+
+	response, err := repo.SendMessage("Hello world")
+	assert.NoError(t, err)
+	assert.Empty(t, response)
+
+	mockClient.AssertExpectations(t)
+}
+
+func TestGroqRepository_SendMessage_NonMessageType(t *testing.T) {
+	// Create mock HTTP client that returns non-message type
+	mockClient := &mocks.MockHTTPClient{}
+
+	mockResponse := mocks.CreateMockResponse(200, `{
+		"id": "test-id",
+		"output": [
+			{
+				"type": "notification",
+				"id": "notif-1",
+				"status": "completed"
+			}
+		]
+	}`)
+	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string")).Return(mockResponse, nil)
+
+	cfg := config.Config{
+		GroqAPIKey: "test-api-key",
+		ChatModel:  "test-model",
+	}
+	repo, err := NewGroqRepository(cfg, mockClient)
+	assert.NoError(t, err)
+
+	response, err := repo.SendMessage("Hello world")
+	assert.NoError(t, err)
+	assert.Empty(t, response)
+
+	mockClient.AssertExpectations(t)
+}
+
+func TestGroqRepository_SendMessage_NonTextContent(t *testing.T) {
+	// Create mock HTTP client that returns non-text content
+	mockClient := &mocks.MockHTTPClient{}
+
+	mockResponse := mocks.CreateMockResponse(200, `{
+		"id": "test-id",
+		"output": [
+			{
+				"type": "message",
+				"id": "msg-1",
+				"status": "completed",
+				"content": [
+					{
+						"type": "image",
+						"url": "http://example.com/image.jpg"
+					}
+				]
+			}
+		]
+	}`)
+	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string")).Return(mockResponse, nil)
+
+	cfg := config.Config{
+		GroqAPIKey: "test-api-key",
+		ChatModel:  "test-model",
+	}
+	repo, err := NewGroqRepository(cfg, mockClient)
+	assert.NoError(t, err)
+
+	response, err := repo.SendMessage("Hello world")
+	assert.NoError(t, err)
+	assert.Empty(t, response)
+
+	mockClient.AssertExpectations(t)
+}
+
+func TestHttpClientImpl_Post(t *testing.T) {
+	// Test the actual HTTP client implementation
+	client := NewHttpClient(&http.Client{}, "test-token")
+	assert.NotNil(t, client)
+	
+	// We can't test the actual HTTP call without a real server,
+	// but we can verify the client is created properly
+	clientImpl, ok := client.(*HttpClientImpl)
+	assert.True(t, ok)
+	assert.NotNil(t, clientImpl.client)
+	assert.Equal(t, "test-token", clientImpl.bearerToken)
 }

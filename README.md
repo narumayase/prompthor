@@ -14,8 +14,8 @@ documentation at: [Groq](https://console.groq.com/docs/overview)
 ### Prerequisites
 
 - Go 1.21 or higher
-- WhatsApp Business API access token
-- WhatsApp Business phone number
+- OpenAI API key (optional, for OpenAI integration)
+- Groq API key (optional, for Groq integration)
 
 ## 🚀 Installation
 
@@ -46,9 +46,12 @@ Create a `.env` file based on `env.example`:
 
 - `CHAT_MODEL`: Chat model to use. If "OpenAI" is selected, the OpenAI API is used; otherwise, Groq is used.
     - Example for Groq: llama-3.3-70b-versatile
+    - Default: openai/gpt-oss-20b
 - `OPENAI_API_KEY`: OpenAI API key (required for OpenAI)
 - `GROQ_API_KEY`: Groq API key (required for Groq)
+- `GROQ_URL`: Groq API URL (default: https://api.groq.com/openai/v1/responses)
 - `PORT`: Server port (default: 8080)
+- `LOG_LEVEL`: Log level (debug, info, warn, error, fatal, panic - default: info)
 
 ### OpenAI API Setup
 
@@ -115,7 +118,7 @@ This project follows Clean Architecture principles:
 
 - **Domain**: Entities, repository interfaces, and use cases
 - **Application**: Implementation of use cases
-- **Infrastructure**: OpenAI repository implementation
+- **Infrastructure**: OpenAI and Groq repository implementations
 - **Interfaces**: HTTP controllers and routers
 
 ## 📁 Project Structure
@@ -138,7 +141,57 @@ anyprompt/
 └── README.md             # This file
 ```
 
+## 🧪 Testing
+
+### Running Tests
+
+To run all tests:
+
+```bash
+go test ./...
+```
+
+To run tests with verbose output:
+
+```bash
+go test -v ./...
+```
+
+To run tests for a specific package:
+
+```bash
+go test ./internal/config/
+go test ./cmd/server/
+```
+
+### Test Coverage
+
+To check test coverage (excluding mocks):
+
+```bash
+# Generate coverage report
+go test -coverprofile=coverage.out ./...
+
+# View coverage report in terminal
+go tool cover -func=coverage.out
+
+# Generate HTML coverage report
+go tool cover -html=coverage.out -o coverage.html
+
+# View coverage excluding mocks
+go test -coverprofile=coverage.out ./... && \
+go tool cover -func=coverage.out | grep -v "mocks"
+```
+
+### Running Benchmarks
+
+```bash
+go test -bench=. ./...
+```
+
 ## BackLog
 
-- [ ] Unit Tests
+- [x] Unit Tests
 - [ ] Add others paid LLMs
+- [ ] Integration tests
+- [ ] API documentation with Swagger

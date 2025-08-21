@@ -138,6 +138,7 @@ anyprompt/
 │   └── application/      # Use cases
 ├── main.go               # Main entry point
 ├── go.mod                # Go dependencies
+├── README_ES.md          # README in spanish
 └── README.md             # This file
 ```
 

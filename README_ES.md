@@ -1,4 +1,4 @@
-# AnyPrompt API
+# anyprompt - API de integración con LLMs
 
 Este proyecto provee una API que integra múltiples modelos de lenguaje grandes (LLM).
 
@@ -134,7 +134,8 @@ anyprompt/
 │   └── application/      # Casos de uso
 ├── main.go               # Punto de entrada principal
 ├── go.mod                # Dependencias de Go
-└── README.md             # Este archivo
+├── README_ES.md          # Este archivo
+└── README.md             # README en inglés
 ```
 
 ## 🧪 Pruebas
@@ -187,7 +188,7 @@ go test -bench=. ./...
 
 ## BackLog
 
-- [x] Unit Tests
+- [x] Pruebas unitarias
 - [ ] Agregar otros LLMs de pago
 - [ ] Pruebas de integración
 - [ ] Documentación de API con Swagger

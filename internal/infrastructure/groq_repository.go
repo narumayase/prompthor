@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"anyprompt/internal/config"
+	"anyprompt/internal/infrastructure/client"
 	"anyprompt/internal/infrastructure/response"
 	"anyprompt/pkg/domain"
 	"bytes"
@@ -13,19 +14,35 @@ import (
 
 const (
 	url = "https://api.groq.com/openai/v1/responses"
+	//TODO hacerla parametrizable!
 )
 
 // GroqRepository implements ChatRepository using Groq API
 type GroqRepository struct {
-	apiKey string
-	model  string
+	apiKey     string
+	model      string
+	httpClient client.HTTPClient
+	baseURL    string
 }
 
 // NewGroqRepository creates a new instance of the Groq repository
 func NewGroqRepository(config config.Config) (domain.ChatRepository, error) {
 	return &GroqRepository{
-		apiKey: config.GroqAPIKey,
-		model:  config.ChatModel,
+		apiKey:     config.GroqAPIKey,
+		model:      config.ChatModel,
+		httpClient: client.NewDefaultHTTPClient(),
+		baseURL:    url,
+	}, nil
+}
+
+// NewGroqRepositoryWithClient creates a repository with custom HTTP client (for testing)
+// TODO ver de cambiar esto
+func NewGroqRepositoryWithClient(config config.Config, httpClient client.HTTPClient, baseURL string) (domain.ChatRepository, error) {
+	return &GroqRepository{
+		apiKey:     config.GroqAPIKey,
+		model:      config.ChatModel,
+		httpClient: httpClient,
+		baseURL:    baseURL,
 	}, nil
 }
 
@@ -40,7 +57,7 @@ func (r *GroqRepository) SendMessage(prompt string) (string, error) {
 		return "", err
 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", r.baseURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", err
 	}
@@ -48,8 +65,7 @@ func (r *GroqRepository) SendMessage(prompt string) (string, error) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+r.apiKey)
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := r.httpClient.Do(req)
 	if err != nil {
 		return "", err
 	}

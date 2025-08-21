@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"anyprompt/internal/infrastructure/client"
 	"anyprompt/pkg/domain"
 	"context"
 	"fmt"
@@ -11,7 +12,7 @@ import (
 
 // OpenAIRepository implements ChatRepository using OpenAI API
 type OpenAIRepository struct {
-	client *openai.Client
+	client client.OpenAIClient
 }
 
 // NewOpenAIRepository creates a new instance of the OpenAI repository
@@ -21,10 +22,16 @@ func NewOpenAIRepository() (domain.ChatRepository, error) {
 		return nil, fmt.Errorf("OPENAI_API_KEY environment variable is required")
 	}
 
-	client := openai.NewClient(apiKey)
+	return &OpenAIRepository{
+		client: client.NewDefaultOpenAIClient(apiKey),
+	}, nil
+}
+
+// NewOpenAIRepositoryWithClient creates a repository with custom OpenAI client (for testing)
+func NewOpenAIRepositoryWithClient(client client.OpenAIClient) domain.ChatRepository {
 	return &OpenAIRepository{
 		client: client,
-	}, nil
+	}
 }
 
 // SendMessage sends a message to ChatGPT and returns the response

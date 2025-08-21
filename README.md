@@ -1,4 +1,4 @@
-# AnyPrompt API
+# anyprompt - LLMs integration API
 
 This project provides an API that integrates multiple large language models (LLM).
 

@@ -49,7 +49,7 @@ func TestRouter_HealthEndpoint(t *testing.T) {
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
 		assert.Equal(t, "OK", response["status"])
-		assert.Equal(t, "AnyPrompt API is running", response["message"])
+		assert.Equal(t, "anyprompt API is running", response["message"])
 	})
 
 	t.Run("health endpoint with different methods", func(t *testing.T) {

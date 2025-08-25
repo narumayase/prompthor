@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"anyprompt/pkg/domain"
+	"anyprompt/internal/domain"
 
 	"github.com/gin-gonic/gin"
 )

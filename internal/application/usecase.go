@@ -1,7 +1,7 @@
 package application
 
 import (
-	"anyprompt/pkg/domain"
+	"anyprompt/internal/domain"
 	"github.com/rs/zerolog/log"
 )
 

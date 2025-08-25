@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"anyprompt/pkg/domain"
+	"anyprompt/internal/domain"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -179,7 +179,7 @@ func TestChatHandler_HandleChat_MissingContentType(t *testing.T) {
 
 	// Gin actually processes valid JSON even without Content-Type header
 	assert.Equal(t, http.StatusOK, w.Code)
-	
+
 	var response domain.ChatResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)

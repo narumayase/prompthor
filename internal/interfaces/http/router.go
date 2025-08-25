@@ -1,9 +1,9 @@
 package http
 
 import (
+	"anyprompt/internal/domain"
 	"anyprompt/internal/interfaces/http/handler"
 	"anyprompt/internal/interfaces/http/middleware"
-	"anyprompt/pkg/domain"
 
 	"github.com/gin-gonic/gin"
 )

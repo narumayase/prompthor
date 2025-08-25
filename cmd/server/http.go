@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"anyprompt/internal/config"
+	"anyprompt/internal/domain"
 	httphandler "anyprompt/internal/interfaces/http"
-	"anyprompt/pkg/domain"
 )
 
 func Run(cfg config.Config, usecase domain.ChatUseCase) {

@@ -2,10 +2,11 @@ package main
 
 import (
 	"anyprompt/cmd/server"
+	"anyprompt/internal/application"
 	"anyprompt/internal/config"
-	"anyprompt/internal/infrastructure"
-	"anyprompt/pkg/application"
-	"anyprompt/pkg/domain"
+	"anyprompt/internal/domain"
+	"anyprompt/internal/infrastructure/client"
+	"anyprompt/internal/infrastructure/repository"
 	"github.com/rs/zerolog/log"
 	"net/http"
 )
@@ -37,10 +38,10 @@ func initializeRepositories(config config.Config) domain.ChatRepository {
 // initializeGroqRepository creates and configures a Groq repository instance
 func initializeGroqRepository(config config.Config) domain.ChatRepository {
 	groqClient := &http.Client{}
-	groqHttpClient := infrastructure.NewHttpClient(groqClient, config.GroqAPIKey)
+	groqHttpClient := client.NewHttpClient(groqClient, config.GroqAPIKey)
 
 	log.Info().Msg("🚀 Starting with Groq API")
-	chatRepo, err := infrastructure.NewGroqRepository(config, groqHttpClient)
+	chatRepo, err := repository.NewGroqRepository(config, groqHttpClient)
 	if err != nil {
 		log.Error().Err(err).Msgf("failed to create Groq repository: %v", err)
 		log.Fatal()
@@ -50,10 +51,10 @@ func initializeGroqRepository(config config.Config) domain.ChatRepository {
 
 // initializeOpenAIRepository creates and configures an OpenAI repository instance
 func initializeOpenAIRepository(config config.Config) domain.ChatRepository {
-	client := infrastructure.NewOpenAIClient(config.OpenAIKey)
+	client := client.NewOpenAIClient(config.OpenAIKey)
 
 	log.Info().Msg("🚀 Starting with OpenAI API")
-	chatRepo, err := infrastructure.NewOpenAIRepository(client)
+	chatRepo, err := repository.NewOpenAIRepository(client)
 	if err != nil {
 		log.Error().Err(err).Msgf("failed to create OpenAI repository: %v", err)
 		log.Fatal()

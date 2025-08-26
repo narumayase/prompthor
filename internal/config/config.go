@@ -10,11 +10,14 @@ import (
 
 // Config contains the application configuration
 type Config struct {
-	Port       string
-	OpenAIKey  string
-	GroqAPIKey string
-	GroqUrl    string
-	ChatModel  string
+	Port         string
+	OpenAIKey    string
+	GroqAPIKey   string
+	GroqUrl      string
+	ChatModel    string
+	KafkaEnabled bool
+	KafkaBrokers string
+	KafkaTopic   string
 }
 
 // Load loads configuration from environment variables or an .env file
@@ -26,11 +29,14 @@ func Load() Config {
 	setLogLevel()
 
 	return Config{
-		Port:       getEnv("PORT", "8080"),
-		OpenAIKey:  getEnv("OPENAI_API_KEY", ""),
-		GroqAPIKey: getEnv("GROQ_API_KEY", ""),
-		GroqUrl:    getEnv("GROQ_URL", "https://api.groq.com/openai/v1/responses"),
-		ChatModel:  getEnv("CHAT_MODEL", "openai/gpt-oss-20b"),
+		Port:         getEnv("PORT", "8080"),
+		OpenAIKey:    getEnv("OPENAI_API_KEY", ""),
+		GroqAPIKey:   getEnv("GROQ_API_KEY", ""),
+		GroqUrl:      getEnv("GROQ_URL", "https://api.groq.com/openai/v1/responses"),
+		ChatModel:    getEnv("CHAT_MODEL", "openai/gpt-oss-20b"),
+		KafkaEnabled: getEnvAsBool("KAFKA_ENABLED", false),
+		KafkaBrokers: getEnv("KAFKA_BROKERS", "localhost:9092"),
+		KafkaTopic:   getEnv("KAFKA_TOPIC", "anyompt-topic"),
 	}
 }
 
@@ -38,6 +44,14 @@ func Load() Config {
 func getEnv(key, defaultValue string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
+	}
+	return defaultValue
+}
+
+// getEnvAsBool gets an environment variable as a boolean or returns a default value
+func getEnvAsBool(key string, defaultValue bool) bool {
+	if value := os.Getenv(key); value != "" {
+		return strings.ToLower(value) == "true"
 	}
 	return defaultValue
 }

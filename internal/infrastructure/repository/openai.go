@@ -1,7 +1,8 @@
-package infrastructure
+package repository
 
 import (
-	"anyprompt/pkg/domain"
+	"anyompt/internal/domain"
+	"anyompt/internal/infrastructure/client"
 	"context"
 	"fmt"
 	"github.com/sashabaranov/go-openai"
@@ -9,11 +10,11 @@ import (
 
 // OpenAIRepository implements ChatRepository using OpenAI API
 type OpenAIRepository struct {
-	client OpenAIClient
+	client client.OpenAIClient
 }
 
 // NewOpenAIRepository creates a new instance of the OpenAI repository
-func NewOpenAIRepository(client OpenAIClient) (domain.ChatRepository, error) {
+func NewOpenAIRepository(client client.OpenAIClient) (domain.ChatRepository, error) {
 	return &OpenAIRepository{
 		client: client,
 	}, nil

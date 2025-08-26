@@ -8,7 +8,6 @@ type ChatRequest struct {
 // ChatResponse represents the chat response
 type ChatResponse struct {
 	Response string `json:"response"`
-	Error    string `json:"error,omitempty"`
 }
 
 // ErrorResponse represents an error response

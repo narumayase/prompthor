@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"anyprompt/internal/config"
-	httphandler "anyprompt/internal/interfaces/http"
-	"anyprompt/pkg/domain"
+	"anyompt/internal/config"
+	"anyompt/internal/domain"
+	httphandler "anyompt/internal/interfaces/http"
 )
 
 func Run(cfg config.Config, usecase domain.ChatUseCase) {

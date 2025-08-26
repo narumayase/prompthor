@@ -1,4 +1,4 @@
-package infrastructure
+package client
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 )
 
 // HttpClientImpl implements HttpClient interface for making HTTP requests
-type HttpClientImpl struct {
+type HTTPClientImpl struct {
 	client      *http.Client
 	bearerToken string
 }
@@ -21,14 +21,14 @@ type HttpClient interface {
 
 // NewHttpClient creates a new HTTP client with bearer token authentication
 func NewHttpClient(client *http.Client, bearerToken string) HttpClient {
-	return &HttpClientImpl{
+	return &HTTPClientImpl{
 		client:      client,
 		bearerToken: bearerToken,
 	}
 }
 
 // Post sends a POST request with JSON payload and bearer token authentication
-func (c *HttpClientImpl) Post(payload interface{}, url string) (*http.Response, error) {
+func (c *HTTPClientImpl) Post(payload interface{}, url string) (*http.Response, error) {
 	// TODO: add context
 
 	// Convert payload to JSON

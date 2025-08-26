@@ -1,9 +1,10 @@
-package infrastructure
+package repository
 
 import (
-	"anyprompt/internal/config"
-	"anyprompt/internal/infrastructure/response"
-	"anyprompt/pkg/domain"
+	"anyompt/internal/config"
+	"anyompt/internal/domain"
+	"anyompt/internal/infrastructure/client"
+	"anyompt/internal/infrastructure/response"
 	"encoding/json"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
@@ -18,12 +19,12 @@ const (
 type GroqRepository struct {
 	apiKey     string
 	model      string
-	httpClient HttpClient
+	httpClient client.HttpClient
 	baseURL    string
 }
 
 // NewGroqRepository creates a new instance of the Groq repository
-func NewGroqRepository(config config.Config, httpClient HttpClient) (domain.ChatRepository, error) {
+func NewGroqRepository(config config.Config, httpClient client.HttpClient) (domain.ChatRepository, error) {
 	return &GroqRepository{
 		apiKey:     config.GroqAPIKey,
 		model:      config.ChatModel,

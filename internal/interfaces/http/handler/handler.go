@@ -1,11 +1,9 @@
 package handler
 
 import (
-	"net/http"
-
-	"anyprompt/pkg/domain"
-
+	"anyompt/internal/domain"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // ChatHandler handles HTTP requests related to chat
@@ -30,7 +28,6 @@ func (h *ChatHandler) HandleChat(c *gin.Context) {
 		})
 		return
 	}
-
 	response, err := h.chatUseCase.ProcessChat(request.Prompt)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -38,8 +35,5 @@ func (h *ChatHandler) HandleChat(c *gin.Context) {
 		})
 		return
 	}
-
-	c.JSON(http.StatusOK, domain.ChatResponse{
-		Response: response,
-	})
+	c.JSON(http.StatusOK, response)
 }

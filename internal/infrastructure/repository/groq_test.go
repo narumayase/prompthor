@@ -1,12 +1,12 @@
-package infrastructure
+package repository
 
 import (
-	"anyprompt/internal/infrastructure/mocks"
+	"anyompt/internal/infrastructure/client/mocks"
 	"errors"
 	"net/http"
 	"testing"
 
-	"anyprompt/internal/config"
+	"anyompt/internal/config"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -254,17 +254,4 @@ func TestGroqRepository_SendMessage_NonTextContent(t *testing.T) {
 	assert.Empty(t, response)
 
 	mockClient.AssertExpectations(t)
-}
-
-func TestHttpClientImpl_Post(t *testing.T) {
-	// Test the actual HTTP client implementation
-	client := NewHttpClient(&http.Client{}, "test-token")
-	assert.NotNil(t, client)
-	
-	// We can't test the actual HTTP call without a real server,
-	// but we can verify the client is created properly
-	clientImpl, ok := client.(*HttpClientImpl)
-	assert.True(t, ok)
-	assert.NotNil(t, clientImpl.client)
-	assert.Equal(t, "test-token", clientImpl.bearerToken)
 }

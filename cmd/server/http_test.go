@@ -1,8 +1,8 @@
 package server
 
 import (
-	"anyprompt/internal/config"
-	"anyprompt/pkg/domain"
+	"anyompt/internal/config"
+	"anyompt/internal/domain"
 	"errors"
 	"testing"
 
@@ -188,13 +188,13 @@ func TestRun_HTTPServerIntegration(t *testing.T) {
 	t.Run("server configuration integration", func(t *testing.T) {
 		// Test that all components work together
 		serverAddr := ":" + cfg.Port
-		
+
 		// Verify server address
 		assert.Equal(t, ":8080", serverAddr)
-		
+
 		// Verify usecase is ready
 		assert.NotNil(t, mockUseCase)
-		
+
 		// Verify config is complete
 		assert.NotEmpty(t, cfg.Port)
 	})

@@ -1,9 +1,9 @@
 package http
 
 import (
-	"anyprompt/internal/interfaces/http/handler"
-	"anyprompt/internal/interfaces/http/middleware"
-	"anyprompt/pkg/domain"
+	"anyompt/internal/domain"
+	"anyompt/internal/interfaces/http/handler"
+	"anyompt/internal/interfaces/http/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +27,7 @@ func SetupRouter(chatUseCase domain.ChatUseCase) *gin.Engine {
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status":  "OK",
-			"message": "anyprompt API is running",
+			"message": "anyompt API is running",
 		})
 	})
 	return router

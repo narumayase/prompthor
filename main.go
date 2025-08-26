@@ -1,11 +1,12 @@
 package main
 
 import (
-	"anyprompt/cmd/server"
-	"anyprompt/internal/config"
-	"anyprompt/internal/infrastructure"
-	"anyprompt/pkg/application"
-	"anyprompt/pkg/domain"
+	"anyompt/cmd/server"
+	"anyompt/internal/application"
+	"anyompt/internal/config"
+	"anyompt/internal/domain"
+	"anyompt/internal/infrastructure/client"
+	"anyompt/internal/infrastructure/repository"
 	"github.com/rs/zerolog/log"
 	"net/http"
 )
@@ -15,32 +16,41 @@ func main() {
 	cfg := config.Load()
 
 	// Create repository based on configuration
-	chatRepo := initializeRepositories(cfg)
+	chatRepo, eventRepo := initializeRepositories(cfg)
+	if eventRepo != nil {
+		defer eventRepo.Close()
+	}
 
 	// Create use case
-	chatUseCase := application.NewChatUseCase(chatRepo)
+	chatUseCase := application.NewChatUseCase(chatRepo, eventRepo)
 
 	server.Run(cfg, chatUseCase)
 }
 
 // initializeRepositories creates and returns the appropriate chat repository based on configuration
-func initializeRepositories(config config.Config) domain.ChatRepository {
+func initializeRepositories(config config.Config) (domain.ChatRepository, domain.ProducerRepository) {
+	var chatRepo domain.ChatRepository
 	if config.ChatModel == "OpenAI" && config.OpenAIKey != "" {
-		return initializeOpenAIRepository(config)
+		chatRepo = initializeOpenAIRepository(config)
+	} else if config.GroqAPIKey != "" {
+		chatRepo = initializeGroqRepository(config)
 	}
-	if config.GroqAPIKey != "" {
-		return initializeGroqRepository(config)
+
+	eventRepo, err := repository.NewKafkaRepository(config)
+	if err != nil {
+		log.Error().Err(err).Msgf("failed to create Kafka repository: %v", err)
 	}
-	return nil
+
+	return chatRepo, eventRepo
 }
 
 // initializeGroqRepository creates and configures a Groq repository instance
 func initializeGroqRepository(config config.Config) domain.ChatRepository {
 	groqClient := &http.Client{}
-	groqHttpClient := infrastructure.NewHttpClient(groqClient, config.GroqAPIKey)
+	groqHttpClient := client.NewHttpClient(groqClient, config.GroqAPIKey)
 
 	log.Info().Msg("🚀 Starting with Groq API")
-	chatRepo, err := infrastructure.NewGroqRepository(config, groqHttpClient)
+	chatRepo, err := repository.NewGroqRepository(config, groqHttpClient)
 	if err != nil {
 		log.Error().Err(err).Msgf("failed to create Groq repository: %v", err)
 		log.Fatal()
@@ -50,10 +60,10 @@ func initializeGroqRepository(config config.Config) domain.ChatRepository {
 
 // initializeOpenAIRepository creates and configures an OpenAI repository instance
 func initializeOpenAIRepository(config config.Config) domain.ChatRepository {
-	client := infrastructure.NewOpenAIClient(config.OpenAIKey)
+	client := client.NewOpenAIClient(config.OpenAIKey)
 
 	log.Info().Msg("🚀 Starting with OpenAI API")
-	chatRepo, err := infrastructure.NewOpenAIRepository(client)
+	chatRepo, err := repository.NewOpenAIRepository(client)
 	if err != nil {
 		log.Error().Err(err).Msgf("failed to create OpenAI repository: %v", err)
 		log.Fatal()

@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"anyprompt/internal/domain"
+	"anyompt/internal/domain"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

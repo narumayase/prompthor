@@ -49,12 +49,12 @@ func TestRouter_HealthEndpoint(t *testing.T) {
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
 		assert.Equal(t, "OK", response["status"])
-		assert.Equal(t, "anyprompt API is running", response["message"])
+		assert.Equal(t, "anyompt API is running", response["message"])
 	})
 
 	t.Run("health endpoint with different methods", func(t *testing.T) {
 		methods := []string{"POST", "PUT", "DELETE", "PATCH"}
-		
+
 		for _, method := range methods {
 			req, _ := http.NewRequest(method, "/health", nil)
 			w := httptest.NewRecorder()
@@ -86,7 +86,7 @@ func TestRouter_ChatEndpoint(t *testing.T) {
 
 	t.Run("chat endpoint only accepts POST", func(t *testing.T) {
 		methods := []string{"GET", "PUT", "DELETE", "PATCH"}
-		
+
 		for _, method := range methods {
 			req, _ := http.NewRequest(method, "/api/v1/chat/ask", nil)
 			w := httptest.NewRecorder()
@@ -193,10 +193,10 @@ func TestRouter_MiddlewareOrder(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		
+
 		// CORS middleware should set headers
 		assert.Equal(t, "*", w.Header().Get("Access-Control-Allow-Origin"))
-		
+
 		// Response should be successful (no panic from error handler)
 		var response map[string]interface{}
 		err := json.Unmarshal(w.Body.Bytes(), &response)

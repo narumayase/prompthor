@@ -1,4 +1,4 @@
-# anyprompt - API de integración con LLMs
+# anyompt - API de integración con LLMs
 
 Este proyecto provee una API que integra múltiples modelos de lenguaje grandes (LLM).
 
@@ -7,6 +7,7 @@ Este proyecto provee una API que integra múltiples modelos de lenguaje grandes 
 - Enviar prompts a OpenAI o Groq desde un mismo endpoint.
 - Cambiar dinámicamente el modelo utilizado sin modificar el código cliente.
 - Escalar y extender a otros LLMs en el futuro.
+- Integración orientada a eventos con Kafka: Opcional, envía las respuestas a un tópico de Kafka para su posterior procesamiento.
 
 Por el momento está integrada con OpenAI y con Groq, este último permite múltiples modelos gratuitos con cierto límite de token, ver documentación en: [Groq](https://console.groq.com/docs/overview)
 
@@ -15,6 +16,7 @@ Por el momento está integrada con OpenAI y con Groq, este último permite múlt
 - Go 1.21 o mayor
 - API key de OpenAI (opcional, para integración con OpenAI)
 - API key de Groq (opcional, para integración con Groq)
+- Kafka (opcional, para integración con Kafka)
 
 ## 🚀 Instalación
 
@@ -51,6 +53,9 @@ Crear un archivo `.env` basado en `env.example`:
 - `GROQ_URL`: URL de la API de Groq (por defecto: https://api.groq.com/openai/v1/responses)
 - `PORT`: Puerto del servidor (por defecto: 8080)
 - `LOG_LEVEL`: Nivel de log (debug, info, warn, error, fatal, panic - por defecto: info)
+- `KAFKA_ENABLED`: Habilita la integración con Kafka (true o false)
+- `KAFKA_BROKERS`: Lista de brokers de Kafka separados por comas
+- `KAFKA_TOPIC`: Tópico de Kafka para enviar eventos
 
 ### Configuración de OpenAI API
 
@@ -92,7 +97,7 @@ Verifica el estado de la API.
 ```json
 {
   "status": "OK",
-  "message": "AnyPrompt API is running"
+  "message": "anyompt API is running"
 }
 ```
 
@@ -120,7 +125,7 @@ Este proyecto sigue los principios de Clean Architecture:
 ## 📁 Estructura del Proyecto
 
 ```
-anyprompt/
+anyompt/
 ├── cmd/                  # Puntos de entrada de la aplicación
 │   └── server/           # Servidor principal
 ├── internal/             # Código específico del proyecto

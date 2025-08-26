@@ -1,4 +1,4 @@
-# anyprompt - LLMs integration API
+# anyompt - LLMs integration API
 
 This project provides an API that integrates multiple large language models (LLM).
 
@@ -7,6 +7,7 @@ This project provides an API that integrates multiple large language models (LLM
 - Send prompts to OpenAI or Groq from a single endpoint.
 - Dynamically switch the model used without modifying client code.
 - Scale and extend to other LLMs in the future.
+- Event-driven integration with Kafka: Optional, send responses to a Kafka topic for further processing.
 
 Currently, it is integrated with OpenAI and Groq. Groq offers multiple free models with certain token limits; see
 documentation at: [Groq](https://console.groq.com/docs/overview)
@@ -16,6 +17,7 @@ documentation at: [Groq](https://console.groq.com/docs/overview)
 - Go 1.21 or higher
 - OpenAI API key (optional, for OpenAI integration)
 - Groq API key (optional, for Groq integration)
+- Kafka (optional, for Kafka integration)
 
 ## 🚀 Installation
 
@@ -52,6 +54,9 @@ Create a `.env` file based on `env.example`:
 - `GROQ_URL`: Groq API URL (default: https://api.groq.com/openai/v1/responses)
 - `PORT`: Server port (default: 8080)
 - `LOG_LEVEL`: Log level (debug, info, warn, error, fatal, panic - default: info)
+- `KAFKA_ENABLED`: Enable Kafka integration (true or false)
+- `KAFKA_BROKERS`: Comma-separated list of Kafka brokers
+- `KAFKA_TOPIC`: Kafka topic to send events to
 
 ### OpenAI API Setup
 
@@ -96,7 +101,7 @@ Checks the API status.
 ```json
 {
   "status": "OK",
-  "message": "anyprompt API is running"
+  "message": "anyompt API is running"
 }
 ```
 
@@ -124,7 +129,7 @@ This project follows Clean Architecture principles:
 ## 📁 Project Structure
 
 ```
-anyprompt/
+anyompt/
 ├── cmd/                  # Application entry points
 │   └── server/           # Main server
 ├── internal/             # Project-specific code
@@ -150,19 +155,6 @@ To run all tests:
 
 ```bash
 go test ./...
-```
-
-To run tests with verbose output:
-
-```bash
-go test -v ./...
-```
-
-To run tests for a specific package:
-
-```bash
-go test ./internal/config/
-go test ./cmd/server/
 ```
 
 ### Test Coverage

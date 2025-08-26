@@ -1,10 +1,10 @@
 package repository
 
 import (
-	"anyprompt/internal/config"
-	"anyprompt/internal/domain"
-	"anyprompt/internal/infrastructure/client"
-	"anyprompt/internal/infrastructure/response"
+	"anyompt/internal/config"
+	"anyompt/internal/domain"
+	"anyompt/internal/infrastructure/client"
+	"anyompt/internal/infrastructure/response"
 	"encoding/json"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"

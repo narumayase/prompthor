@@ -1,28 +1,45 @@
 package application
 
 import (
-	"anyprompt/internal/domain"
+	"anyompt/internal/domain"
+	"encoding/json"
 	"github.com/rs/zerolog/log"
 )
 
 // ChatUseCaseImpl implements ChatUseCase
 type ChatUseCaseImpl struct {
-	chatRepo domain.ChatRepository
+	chatRepository     domain.ChatRepository
+	producerRepository domain.ProducerRepository
 }
 
 // NewChatUseCase creates a new instance of the chat use case
-func NewChatUseCase(chatRepo domain.ChatRepository) domain.ChatUseCase {
+func NewChatUseCase(chatRepository domain.ChatRepository, producerRepository domain.ProducerRepository) domain.ChatUseCase {
 	return &ChatUseCaseImpl{
-		chatRepo: chatRepo,
+		chatRepository:     chatRepository,
+		producerRepository: producerRepository,
 	}
 }
 
 // ProcessChat processes the chat request
-func (uc *ChatUseCaseImpl) ProcessChat(prompt string) (string, error) {
-	response, err := uc.chatRepo.SendMessage(prompt)
+func (uc *ChatUseCaseImpl) ProcessChat(prompt string) (*domain.ChatResponse, error) {
+	responsePrompt, err := uc.chatRepository.SendMessage(prompt)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to send message")
-		return "", err
+		return nil, err
+	}
+	response := &domain.ChatResponse{
+		Response: responsePrompt,
+	}
+	if uc.producerRepository != nil {
+		message, err := json.Marshal(*response)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to marshal message")
+			return nil, err
+		}
+		if err := uc.producerRepository.Produce(message); err != nil {
+			log.Error().Err(err).Msg("Failed to send message to Kafka")
+			return nil, err
+		}
 	}
 	return response, nil
 }

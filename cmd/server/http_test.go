@@ -1,8 +1,8 @@
 package server
 
 import (
-	"anyprompt/internal/config"
-	"anyprompt/internal/domain"
+	"anyompt/internal/config"
+	"anyompt/internal/domain"
 	"errors"
 	"testing"
 

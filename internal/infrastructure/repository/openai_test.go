@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"anyprompt/internal/infrastructure/client"
-	"anyprompt/internal/infrastructure/client/mocks"
+	"anyompt/internal/infrastructure/client"
+	"anyompt/internal/infrastructure/client/mocks"
 	"errors"
 	"os"
 	"strings"
@@ -147,5 +147,3 @@ func TestOpenAIRepository_SendMessage_LongPrompt(t *testing.T) {
 
 	mockClient.AssertExpectations(t)
 }
-
-

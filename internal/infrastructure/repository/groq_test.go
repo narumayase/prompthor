@@ -1,12 +1,12 @@
 package repository
 
 import (
-	"anyprompt/internal/infrastructure/client/mocks"
+	"anyompt/internal/infrastructure/client/mocks"
 	"errors"
 	"net/http"
 	"testing"
 
-	"anyprompt/internal/config"
+	"anyompt/internal/config"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -255,5 +255,3 @@ func TestGroqRepository_SendMessage_NonTextContent(t *testing.T) {
 
 	mockClient.AssertExpectations(t)
 }
-
-

@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"anyprompt/internal/domain"
-	"anyprompt/internal/infrastructure/client"
+	"anyompt/internal/domain"
+	"anyompt/internal/infrastructure/client"
 	"context"
 	"fmt"
 	"github.com/sashabaranov/go-openai"

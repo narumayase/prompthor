@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"anyprompt/internal/domain"
+	"anyompt/internal/domain"
 	"time"
 
 	"github.com/gin-contrib/cors"

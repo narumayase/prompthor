@@ -49,7 +49,7 @@ func TestChatUseCaseImpl_ProcessChat_Success(t *testing.T) {
 	prompt := "Hello, how are you?"
 	expectedResponse := "I'm doing well, thank you!"
 
-	mockChatRepo.On("SendMessage", prompt).Return(expectedResponse, nil)
+	mockChatRepo.On("Send", prompt).Return(expectedResponse, nil)
 	mockEventRepo.On("Produce", mock.Anything).Return(nil)
 
 	result, err := useCase.ProcessChat(prompt)
@@ -67,7 +67,7 @@ func TestChatUseCaseImpl_ProcessChat_Error(t *testing.T) {
 	prompt := "Hello, how are you?"
 	expectedError := errors.New("API connection failed")
 
-	mockChatRepo.On("SendMessage", prompt).Return("", expectedError)
+	mockChatRepo.On("Send", prompt).Return("", expectedError)
 
 	result, err := useCase.ProcessChat(prompt)
 
@@ -85,7 +85,7 @@ func TestChatUseCaseImpl_ProcessChat_EmptyPrompt(t *testing.T) {
 	prompt := ""
 	expectedResponse := "Please provide a valid prompt"
 
-	mockChatRepo.On("SendMessage", prompt).Return(expectedResponse, nil)
+	mockChatRepo.On("Send", prompt).Return(expectedResponse, nil)
 	mockEventRepo.On("Produce", mock.Anything).Return(nil)
 
 	result, err := useCase.ProcessChat(prompt)
@@ -105,9 +105,9 @@ func TestChatUseCaseImpl_ProcessChat_LongPrompt(t *testing.T) {
 	for i := 0; i < 1000; i++ {
 		longPrompt += "This is a very long prompt. "
 	}
-	expectedResponse := "Response to long prompt"
+	expectedResponse := "MessageResponse to long prompt"
 
-	mockChatRepo.On("SendMessage", longPrompt).Return(expectedResponse, nil)
+	mockChatRepo.On("Send", longPrompt).Return(expectedResponse, nil)
 	mockEventRepo.On("Produce", mock.Anything).Return(nil)
 
 	result, err := useCase.ProcessChat(longPrompt)
@@ -123,9 +123,9 @@ func TestChatUseCaseImpl_ProcessChat_SpecialCharacters(t *testing.T) {
 	useCase := &ChatUseCaseImpl{chatRepo: mockChatRepo, producerRepo: mockEventRepo}
 
 	prompt := "Hello! @#$%^&*()_+ 你好 🚀"
-	expectedResponse := "Response with special characters handled"
+	expectedResponse := "MessageResponse with special characters handled"
 
-	mockChatRepo.On("SendMessage", prompt).Return(expectedResponse, nil)
+	mockChatRepo.On("Send", prompt).Return(expectedResponse, nil)
 	mockEventRepo.On("Produce", mock.Anything).Return(nil)
 
 	result, err := useCase.ProcessChat(prompt)

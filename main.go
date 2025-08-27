@@ -28,8 +28,8 @@ func main() {
 }
 
 // initializeRepositories creates and returns the appropriate chat repository based on configuration
-func initializeRepositories(config config.Config) (domain.ChatRepository, domain.ProducerRepository) {
-	var chatRepo domain.ChatRepository
+func initializeRepositories(config config.Config) (domain.LLMRepository, domain.ProducerRepository) {
+	var chatRepo domain.LLMRepository
 	if config.ChatModel == "OpenAI" && config.OpenAIKey != "" {
 		chatRepo = initializeOpenAIRepository(config)
 	} else if config.GroqAPIKey != "" {
@@ -45,7 +45,7 @@ func initializeRepositories(config config.Config) (domain.ChatRepository, domain
 }
 
 // initializeGroqRepository creates and configures a Groq repository instance
-func initializeGroqRepository(config config.Config) domain.ChatRepository {
+func initializeGroqRepository(config config.Config) domain.LLMRepository {
 	groqClient := &http.Client{}
 	groqHttpClient := client.NewHttpClient(groqClient, config.GroqAPIKey)
 
@@ -59,7 +59,7 @@ func initializeGroqRepository(config config.Config) domain.ChatRepository {
 }
 
 // initializeOpenAIRepository creates and configures an OpenAI repository instance
-func initializeOpenAIRepository(config config.Config) domain.ChatRepository {
+func initializeOpenAIRepository(config config.Config) domain.LLMRepository {
 	client := client.NewOpenAIClient(config.OpenAIKey)
 
 	log.Info().Msg("🚀 Starting with OpenAI API")

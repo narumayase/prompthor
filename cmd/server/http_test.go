@@ -3,6 +3,7 @@ package server
 import (
 	"anyompt/internal/config"
 	"anyompt/internal/domain"
+	"context"
 	"errors"
 	"testing"
 
@@ -138,7 +139,7 @@ func TestRun_UseCaseIntegration(t *testing.T) {
 		assert.NotNil(t, usecase)
 
 		// Test the mock functionality
-		response, err := usecase.ProcessChat("test prompt")
+		response, err := usecase.ProcessChat(context.Background(), domain.PromptRequest{Prompt: "test prompt"})
 		assert.NoError(t, err)
 		assert.Equal(t, "test response", response)
 

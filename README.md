@@ -88,7 +88,7 @@ Sends a prompt to the selected LLM and receives a response.
 
 ```json
 {
-  "response": "The capital of France is Paris."
+  "message_response": "The capital of France is Paris."
 }
 ```
 
@@ -114,6 +114,8 @@ curl http://localhost:8080/health
 # Chat endpoint
 curl -X POST http://localhost:8080/api/v1/chat/ask \
   -H "Content-Type: application/json" \
+  -H "X-Correlation-ID: f81d4fae-7dec-11d0-a765-00a0c91e6bf6" \
+  -H "X-Routing-Key: telegram:12345" \
   -d '{"prompt": "What is the capital of France?"}'
 ```
 
@@ -188,3 +190,4 @@ go test -bench=. ./...
 - [ ] Add others paid LLMs
 - [ ] Integration tests
 - [ ] API documentation with Swagger
+- [ ] Add request_id in header and its middleware

@@ -31,7 +31,7 @@ func TestNewChatHandler(t *testing.T) {
 
 	assert.NotNil(t, handler)
 	assert.IsType(t, &ChatHandler{}, handler)
-	assert.Equal(t, mockUseCase, handler.chatUseCase)
+	assert.Equal(t, mockUseCase, handler.usecase)
 }
 
 func TestChatHandler_HandleChat_Success(t *testing.T) {
@@ -44,7 +44,7 @@ func TestChatHandler_HandleChat_Success(t *testing.T) {
 	router.POST("/chat", handler.HandleChat)
 
 	// Prepare test data
-	request := domain.ChatRequest{
+	request := domain.PromptRequest{
 		Prompt: "Hello, how are you?",
 	}
 	expectedResponse := "I'm doing well, thank you!"
@@ -68,7 +68,7 @@ func TestChatHandler_HandleChat_Success(t *testing.T) {
 	var response domain.ChatResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResponse, response.Response)
+	assert.Equal(t, expectedResponse, response.MessageResponse)
 	assert.Empty(t, response.Error)
 
 	mockUseCase.AssertExpectations(t)
@@ -82,7 +82,7 @@ func TestChatHandler_HandleChat_UseCaseError(t *testing.T) {
 	router := gin.New()
 	router.POST("/chat", handler.HandleChat)
 
-	request := domain.ChatRequest{
+	request := domain.PromptRequest{
 		Prompt: "Test prompt",
 	}
 	expectedError := errors.New("API connection failed")
@@ -138,7 +138,7 @@ func TestChatHandler_HandleChat_EmptyPrompt(t *testing.T) {
 	router := gin.New()
 	router.POST("/chat", handler.HandleChat)
 
-	request := domain.ChatRequest{
+	request := domain.PromptRequest{
 		Prompt: "",
 	}
 
@@ -167,7 +167,7 @@ func TestChatHandler_HandleChat_MissingContentType(t *testing.T) {
 	router.POST("/chat", handler.HandleChat)
 
 	// Mock the use case since Gin will still bind valid JSON even without Content-Type
-	expectedResponse := "Response to test prompt"
+	expectedResponse := "MessageResponse to test prompt"
 	mockUseCase.On("ProcessChat", "Test prompt").Return(expectedResponse, nil)
 
 	// Send request without proper JSON content type
@@ -183,7 +183,7 @@ func TestChatHandler_HandleChat_MissingContentType(t *testing.T) {
 	var response domain.ChatResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResponse, response.Response)
+	assert.Equal(t, expectedResponse, response.MessageResponse)
 
 	mockUseCase.AssertExpectations(t)
 }
@@ -202,10 +202,10 @@ func TestChatHandler_HandleChat_LongPrompt(t *testing.T) {
 		longPrompt += "This is a very long prompt. "
 	}
 
-	request := domain.ChatRequest{
+	request := domain.PromptRequest{
 		Prompt: longPrompt,
 	}
-	expectedResponse := "Response to long prompt"
+	expectedResponse := "MessageResponse to long prompt"
 
 	mockUseCase.On("ProcessChat", longPrompt).Return(expectedResponse, nil)
 
@@ -221,7 +221,7 @@ func TestChatHandler_HandleChat_LongPrompt(t *testing.T) {
 	var response domain.ChatResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResponse, response.Response)
+	assert.Equal(t, expectedResponse, response.MessageResponse)
 
 	mockUseCase.AssertExpectations(t)
 }

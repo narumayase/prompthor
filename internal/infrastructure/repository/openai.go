@@ -8,20 +8,20 @@ import (
 	"github.com/sashabaranov/go-openai"
 )
 
-// OpenAIRepository implements ChatRepository using OpenAI API
+// OpenAIRepository implements LLMRepository using OpenAI API
 type OpenAIRepository struct {
 	client client.OpenAIClient
 }
 
 // NewOpenAIRepository creates a new instance of the OpenAI repository
-func NewOpenAIRepository(client client.OpenAIClient) (domain.ChatRepository, error) {
+func NewOpenAIRepository(client client.OpenAIClient) (domain.LLMRepository, error) {
 	return &OpenAIRepository{
 		client: client,
 	}, nil
 }
 
-// SendMessage sends a message to ChatGPT and returns the response
-func (r *OpenAIRepository) SendMessage(prompt string) (string, error) {
+// Send sends a message to ChatGPT and returns the response
+func (r *OpenAIRepository) Send(prompt domain.PromptRequest) (string, error) {
 	ctx := context.Background()
 
 	resp, err := r.client.CreateChatCompletion(
@@ -31,7 +31,7 @@ func (r *OpenAIRepository) SendMessage(prompt string) (string, error) {
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleUser,
-					Content: prompt,
+					Content: prompt.Prompt,
 				},
 			},
 		},

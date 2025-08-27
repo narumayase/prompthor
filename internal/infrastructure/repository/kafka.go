@@ -3,6 +3,7 @@ package repository
 import (
 	"anyompt/internal/config"
 	"anyompt/internal/domain"
+	"context"
 	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/rs/zerolog/log"
@@ -35,16 +36,24 @@ func NewKafkaRepository(cfg config.Config) (domain.ProducerRepository, error) {
 }
 
 // Produce a message to a Kafka topic.
-func (r *KafkaRepository) Produce(event []byte) error {
+func (r *KafkaRepository) Produce(ctx context.Context, message []byte) error {
 	if r.producer == nil {
 		log.Warn().Msg("Kafka producer is not initialized; cannot send messages.")
 		return nil
 	}
+	correlationID := ctx.Value("correlation_id").(string)
+	routingID := ctx.Value("routing_id").(string)
 
+	headers := []kafka.Header{
+		{Key: "correlation_id", Value: []byte(correlationID)},
+		{Key: "origin", Value: []byte("anyompt")},
+	}
 	deliveryChan := make(chan kafka.Event)
 	err := r.producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &r.topic, Partition: kafka.PartitionAny},
-		Value:          event,
+		Value:          message,
+		Headers:        headers,
+		Key:            []byte(routingID),
 	}, deliveryChan)
 
 	if err != nil {

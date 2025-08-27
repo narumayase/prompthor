@@ -68,8 +68,8 @@ func TestOpenAIRepository_SendMessage_Success(t *testing.T) {
 	// Create repository with mock client
 	repo, _ := NewOpenAIRepository(mockClient)
 
-	// Test the actual SendMessage method
-	response, err := repo.SendMessage("Hello world")
+	// Test the actual Send method
+	response, err := repo.Send("Hello world")
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello! How can I assist you today?", response)
 
@@ -85,7 +85,7 @@ func TestOpenAIRepository_SendMessage_APIError(t *testing.T) {
 	// Create repository with mock client
 	repo, _ := NewOpenAIRepository(mockClient)
 
-	response, err := repo.SendMessage("Hello world")
+	response, err := repo.Send("Hello world")
 	assert.Error(t, err)
 	assert.Empty(t, response)
 	assert.Contains(t, err.Error(), "error calling OpenAI API")
@@ -103,7 +103,7 @@ func TestOpenAIRepository_SendMessage_EmptyResponse(t *testing.T) {
 	// Create repository with mock client
 	repo, _ := NewOpenAIRepository(mockClient)
 
-	response, err := repo.SendMessage("Hello world")
+	response, err := repo.Send("Hello world")
 	assert.Error(t, err)
 	assert.Empty(t, response)
 	assert.Contains(t, err.Error(), "no response from OpenAI API")
@@ -123,7 +123,7 @@ func TestOpenAIRepository_SendMessage_EmptyPrompt(t *testing.T) {
 	repo, _ := NewOpenAIRepository(mockClient)
 
 	// Test with empty prompt
-	response, err := repo.SendMessage("")
+	response, err := repo.Send("")
 	assert.NoError(t, err)
 	assert.Equal(t, "Please provide a prompt.", response)
 
@@ -135,15 +135,15 @@ func TestOpenAIRepository_SendMessage_LongPrompt(t *testing.T) {
 	mockClient := &mocks.MockOpenAIClient{}
 
 	longPrompt := strings.Repeat("This is a very long prompt. ", 100)
-	mockResponse := mocks.CreateMockOpenAIResponse("Response to long prompt")
+	mockResponse := mocks.CreateMockOpenAIResponse("MessageResponse to long prompt")
 	mockClient.On("CreateChatCompletion", mock.AnythingOfType("context.backgroundCtx"), mock.AnythingOfType("openai.ChatCompletionRequest")).Return(mockResponse, nil)
 
 	// Create repository with mock client
 	repo, _ := NewOpenAIRepository(mockClient)
 
-	response, err := repo.SendMessage(longPrompt)
+	response, err := repo.Send(longPrompt)
 	assert.NoError(t, err)
-	assert.Equal(t, "Response to long prompt", response)
+	assert.Equal(t, "MessageResponse to long prompt", response)
 
 	mockClient.AssertExpectations(t)
 }

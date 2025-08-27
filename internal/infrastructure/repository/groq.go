@@ -15,7 +15,7 @@ const (
 	// TODO: make this configurable!
 )
 
-// GroqRepository implements ChatRepository using Groq API
+// GroqRepository implements LLMRepository using Groq API
 type GroqRepository struct {
 	apiKey     string
 	model      string
@@ -24,7 +24,7 @@ type GroqRepository struct {
 }
 
 // NewGroqRepository creates a new instance of the Groq repository
-func NewGroqRepository(config config.Config, httpClient client.HttpClient) (domain.ChatRepository, error) {
+func NewGroqRepository(config config.Config, httpClient client.HttpClient) (domain.LLMRepository, error) {
 	return &GroqRepository{
 		apiKey:     config.GroqAPIKey,
 		model:      config.ChatModel,
@@ -33,11 +33,11 @@ func NewGroqRepository(config config.Config, httpClient client.HttpClient) (doma
 	}, nil
 }
 
-// SendMessage sends a message to ChatGPT and returns the response
-func (r *GroqRepository) SendMessage(prompt string) (string, error) {
+// Send sends a message to Groq and returns the response
+func (r *GroqRepository) Send(prompt domain.PromptRequest) (string, error) {
 	payload := map[string]interface{}{
 		"model": r.model,
-		"input": prompt,
+		"input": prompt.Prompt,
 	}
 	resp, err := r.httpClient.Post(payload, r.baseURL)
 	if err != nil {
@@ -54,6 +54,7 @@ func (r *GroqRepository) SendMessage(prompt string) (string, error) {
 	}
 	var outputPrompt string
 	for _, entry := range result.Output {
+		// TODO ver de hacer más bonito esto
 		if entry.Type == "message" {
 			for _, content := range entry.Content {
 				if content.Type == "output_text" {

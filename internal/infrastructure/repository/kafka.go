@@ -15,7 +15,6 @@ type KafkaRepository struct {
 	topic    string
 }
 
-// NewKafkaRepository creates a new instance of the Kafka repository.
 func NewKafkaRepository(cfg config.Config) (domain.ProducerRepository, error) {
 	if !cfg.KafkaEnabled {
 		log.Info().Msg("Kafka is disabled. Skipping producer creation.")

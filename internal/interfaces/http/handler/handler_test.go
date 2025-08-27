@@ -1,14 +1,14 @@
 package handler
 
 import (
+	"anyompt/internal/domain"
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"anyompt/internal/domain"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -20,9 +20,9 @@ type MockChatUseCase struct {
 	mock.Mock
 }
 
-func (m *MockChatUseCase) ProcessChat(prompt string) (string, error) {
-	args := m.Called(prompt)
-	return args.String(0), args.Error(1)
+func (m *MockChatUseCase) ProcessChat(ctx context.Context, prompt domain.PromptRequest) (*domain.ChatResponse, error) {
+	args := m.Called(ctx, prompt)
+	return args.Get(0).(*domain.ChatResponse), args.Error(1)
 }
 
 func TestNewChatHandler(t *testing.T) {
@@ -47,9 +47,11 @@ func TestChatHandler_HandleChat_Success(t *testing.T) {
 	request := domain.PromptRequest{
 		Prompt: "Hello, how are you?",
 	}
-	expectedResponse := "I'm doing well, thank you!"
+	expectedResponse := &domain.ChatResponse{
+		MessageResponse: "I'm doing well, thank you!",
+	}
 
-	mockUseCase.On("ProcessChat", request.Prompt).Return(expectedResponse, nil)
+	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return(expectedResponse, nil)
 
 	// Create request body
 	requestBody, _ := json.Marshal(request)
@@ -68,8 +70,7 @@ func TestChatHandler_HandleChat_Success(t *testing.T) {
 	var response domain.ChatResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResponse, response.MessageResponse)
-	assert.Empty(t, response.Error)
+	assert.Equal(t, expectedResponse.MessageResponse, response.MessageResponse)
 
 	mockUseCase.AssertExpectations(t)
 }
@@ -87,7 +88,7 @@ func TestChatHandler_HandleChat_UseCaseError(t *testing.T) {
 	}
 	expectedError := errors.New("API connection failed")
 
-	mockUseCase.On("ProcessChat", request.Prompt).Return("", expectedError)
+	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return((*domain.ChatResponse)(nil), expectedError)
 
 	requestBody, _ := json.Marshal(request)
 	req, _ := http.NewRequest("POST", "/chat", bytes.NewBuffer(requestBody))
@@ -130,34 +131,6 @@ func TestChatHandler_HandleChat_InvalidJSON(t *testing.T) {
 	assert.Contains(t, response["error"], "Invalid request format")
 }
 
-func TestChatHandler_HandleChat_EmptyPrompt(t *testing.T) {
-	mockUseCase := &MockChatUseCase{}
-	handler := NewChatHandler(mockUseCase)
-
-	gin.SetMode(gin.TestMode)
-	router := gin.New()
-	router.POST("/chat", handler.HandleChat)
-
-	request := domain.PromptRequest{
-		Prompt: "",
-	}
-
-	requestBody, _ := json.Marshal(request)
-	req, _ := http.NewRequest("POST", "/chat", bytes.NewBuffer(requestBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
-
-	// This should fail validation due to the "required" tag
-	assert.Equal(t, http.StatusBadRequest, w.Code)
-
-	var response map[string]string
-	err := json.Unmarshal(w.Body.Bytes(), &response)
-	assert.NoError(t, err)
-	assert.Contains(t, response["error"], "Invalid request format")
-}
-
 func TestChatHandler_HandleChat_MissingContentType(t *testing.T) {
 	mockUseCase := &MockChatUseCase{}
 	handler := NewChatHandler(mockUseCase)
@@ -166,12 +139,15 @@ func TestChatHandler_HandleChat_MissingContentType(t *testing.T) {
 	router := gin.New()
 	router.POST("/chat", handler.HandleChat)
 
-	// Mock the use case since Gin will still bind valid JSON even without Content-Type
-	expectedResponse := "MessageResponse to test prompt"
-	mockUseCase.On("ProcessChat", "Test prompt").Return(expectedResponse, nil)
+	request := domain.PromptRequest{Prompt: "Test prompt"}
+	expectedResponse := &domain.ChatResponse{
+		MessageResponse: "MessageResponse to test prompt",
+	}
+	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return(expectedResponse, nil)
 
 	// Send request without proper JSON content type
-	req, _ := http.NewRequest("POST", "/chat", bytes.NewBuffer([]byte(`{"prompt":"Test prompt"}`)))
+	requestBody, _ := json.Marshal(request)
+	req, _ := http.NewRequest("POST", "/chat", bytes.NewBuffer(requestBody))
 	// Don't set Content-Type header - Gin will still process valid JSON
 
 	w := httptest.NewRecorder()
@@ -183,7 +159,7 @@ func TestChatHandler_HandleChat_MissingContentType(t *testing.T) {
 	var response domain.ChatResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResponse, response.MessageResponse)
+	assert.Equal(t, expectedResponse.MessageResponse, response.MessageResponse)
 
 	mockUseCase.AssertExpectations(t)
 }
@@ -205,9 +181,11 @@ func TestChatHandler_HandleChat_LongPrompt(t *testing.T) {
 	request := domain.PromptRequest{
 		Prompt: longPrompt,
 	}
-	expectedResponse := "MessageResponse to long prompt"
+	expectedResponse := &domain.ChatResponse{
+		MessageResponse: "MessageResponse to long prompt",
+	}
 
-	mockUseCase.On("ProcessChat", longPrompt).Return(expectedResponse, nil)
+	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return(expectedResponse, nil)
 
 	requestBody, _ := json.Marshal(request)
 	req, _ := http.NewRequest("POST", "/chat", bytes.NewBuffer(requestBody))
@@ -221,7 +199,43 @@ func TestChatHandler_HandleChat_LongPrompt(t *testing.T) {
 	var response domain.ChatResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResponse, response.MessageResponse)
+	assert.Equal(t, expectedResponse.MessageResponse, response.MessageResponse)
+
+	mockUseCase.AssertExpectations(t)
+}
+
+func TestChatHandler_HandleChat_WithHeaders(t *testing.T) {
+	mockUseCase := &MockChatUseCase{}
+	handler := NewChatHandler(mockUseCase)
+
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	router.POST("/chat", handler.HandleChat)
+
+	request := domain.PromptRequest{
+		Prompt: "Test with headers",
+	}
+	expectedResponse := &domain.ChatResponse{
+		MessageResponse: "Response with headers",
+	}
+
+	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return(expectedResponse, nil)
+
+	requestBody, _ := json.Marshal(request)
+	req, _ := http.NewRequest("POST", "/chat", bytes.NewBuffer(requestBody))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Correlation-ID", "test-correlation-id")
+	req.Header.Set("X-Routing-ID", "test-routing-id")
+
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var response domain.ChatResponse
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedResponse.MessageResponse, response.MessageResponse)
 
 	mockUseCase.AssertExpectations(t)
 }

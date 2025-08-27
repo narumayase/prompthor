@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/client"
 	"anyompt/internal/infrastructure/client/mocks"
 	"errors"
@@ -68,8 +69,9 @@ func TestOpenAIRepository_SendMessage_Success(t *testing.T) {
 	// Create repository with mock client
 	repo, _ := NewOpenAIRepository(mockClient)
 
-	// Test the actual Send method
-	response, err := repo.Send("Hello world")
+	// Test the actual Send method with domain.PromptRequest
+	promptRequest := domain.PromptRequest{Prompt: "Hello world"}
+	response, err := repo.Send(promptRequest)
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello! How can I assist you today?", response)
 
@@ -85,7 +87,8 @@ func TestOpenAIRepository_SendMessage_APIError(t *testing.T) {
 	// Create repository with mock client
 	repo, _ := NewOpenAIRepository(mockClient)
 
-	response, err := repo.Send("Hello world")
+	promptRequest := domain.PromptRequest{Prompt: "Hello world"}
+	response, err := repo.Send(promptRequest)
 	assert.Error(t, err)
 	assert.Empty(t, response)
 	assert.Contains(t, err.Error(), "error calling OpenAI API")
@@ -103,7 +106,8 @@ func TestOpenAIRepository_SendMessage_EmptyResponse(t *testing.T) {
 	// Create repository with mock client
 	repo, _ := NewOpenAIRepository(mockClient)
 
-	response, err := repo.Send("Hello world")
+	promptRequest := domain.PromptRequest{Prompt: "Hello world"}
+	response, err := repo.Send(promptRequest)
 	assert.Error(t, err)
 	assert.Empty(t, response)
 	assert.Contains(t, err.Error(), "no response from OpenAI API")
@@ -123,7 +127,8 @@ func TestOpenAIRepository_SendMessage_EmptyPrompt(t *testing.T) {
 	repo, _ := NewOpenAIRepository(mockClient)
 
 	// Test with empty prompt
-	response, err := repo.Send("")
+	promptRequest := domain.PromptRequest{Prompt: ""}
+	response, err := repo.Send(promptRequest)
 	assert.NoError(t, err)
 	assert.Equal(t, "Please provide a prompt.", response)
 
@@ -141,7 +146,8 @@ func TestOpenAIRepository_SendMessage_LongPrompt(t *testing.T) {
 	// Create repository with mock client
 	repo, _ := NewOpenAIRepository(mockClient)
 
-	response, err := repo.Send(longPrompt)
+	promptRequest := domain.PromptRequest{Prompt: longPrompt}
+	response, err := repo.Send(promptRequest)
 	assert.NoError(t, err)
 	assert.Equal(t, "MessageResponse to long prompt", response)
 

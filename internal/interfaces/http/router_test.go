@@ -1,6 +1,8 @@
 package http
 
 import (
+	"anyompt/internal/domain"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -16,9 +18,9 @@ type MockChatUseCase struct {
 	mock.Mock
 }
 
-func (m *MockChatUseCase) ProcessChat(prompt string) (string, error) {
-	args := m.Called(prompt)
-	return args.String(0), args.Error(1)
+func (m *MockChatUseCase) ProcessChat(ctx context.Context, prompt domain.PromptRequest) (*domain.ChatResponse, error) {
+	args := m.Called(ctx, prompt)
+	return args.Get(0).(*domain.ChatResponse), args.Error(1)
 }
 
 func TestSetupRouter(t *testing.T) {

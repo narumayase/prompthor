@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/client/mocks"
 	"errors"
 	"net/http"
@@ -117,7 +118,7 @@ func TestGroqRepository_SendMessage_Success(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Test the actual Send method
-	response, err := repo.Send("Hello world")
+	response, err := repo.Send(domain.PromptRequest{Prompt: "Hello world"})
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello! How can I help you?", response)
 
@@ -137,7 +138,7 @@ func TestGroqRepository_SendMessage_HTTPError(t *testing.T) {
 	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
-	response, err := repo.Send("Hello world")
+	response, err := repo.Send(domain.PromptRequest{Prompt: "Hello world"})
 	assert.Error(t, err)
 	assert.Empty(t, response)
 	assert.Contains(t, err.Error(), "network error")
@@ -159,7 +160,7 @@ func TestGroqRepository_SendMessage_InvalidJSON(t *testing.T) {
 	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
-	response, err := repo.Send("Hello world")
+	response, err := repo.Send(domain.PromptRequest{Prompt: "Hello world"})
 	assert.Error(t, err)
 	assert.Empty(t, response)
 
@@ -183,7 +184,7 @@ func TestGroqRepository_SendMessage_EmptyOutput(t *testing.T) {
 	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
-	response, err := repo.Send("Hello world")
+	response, err := repo.Send(domain.PromptRequest{Prompt: "Hello world"})
 	assert.NoError(t, err)
 	assert.Empty(t, response)
 
@@ -213,7 +214,7 @@ func TestGroqRepository_SendMessage_NonMessageType(t *testing.T) {
 	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
-	response, err := repo.Send("Hello world")
+	response, err := repo.Send(domain.PromptRequest{Prompt: "Hello world"})
 	assert.NoError(t, err)
 	assert.Empty(t, response)
 
@@ -249,7 +250,7 @@ func TestGroqRepository_SendMessage_NonTextContent(t *testing.T) {
 	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
-	response, err := repo.Send("Hello world")
+	response, err := repo.Send(domain.PromptRequest{Prompt: "Hello world"})
 	assert.NoError(t, err)
 	assert.Empty(t, response)
 

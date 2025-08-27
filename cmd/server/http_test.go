@@ -16,15 +16,16 @@ type MockChatUseCase struct {
 	mock.Mock
 }
 
-func (m *MockChatUseCase) ProcessChat(prompt string) (string, error) {
-	args := m.Called(prompt)
-	return args.String(0), args.Error(1)
+func (m *MockChatUseCase) ProcessChat(ctx context.Context, prompt domain.PromptRequest) (*domain.ChatResponse, error) {
+	args := m.Called(ctx, prompt)
+	return args.Get(0).(*domain.ChatResponse), args.Error(1)
 }
 
 func TestRun_ServerConfiguration(t *testing.T) {
 	// Create a mock use case
 	mockUseCase := new(MockChatUseCase)
-	mockUseCase.On("ProcessChat", mock.Anything).Return("test response", nil)
+	expectedResponse := &domain.ChatResponse{MessageResponse: "test response"}
+	mockUseCase.On("ProcessChat", mock.Anything, mock.Anything).Return(expectedResponse, nil)
 
 	// Test configuration
 	cfg := config.Config{
@@ -49,7 +50,9 @@ func TestRun_ServerConfiguration(t *testing.T) {
 func TestRun_RouterSetup(t *testing.T) {
 	// Create a mock use case
 	mockUseCase := new(MockChatUseCase)
-	mockUseCase.On("ProcessChat", "test").Return("response", nil)
+	expectedResponse := &domain.ChatResponse{MessageResponse: "response"}
+	promptRequest := domain.PromptRequest{Prompt: "test"}
+	mockUseCase.On("ProcessChat", mock.Anything, promptRequest).Return(expectedResponse, nil)
 
 	cfg := config.Config{
 		Port: "8080",
@@ -132,27 +135,34 @@ func TestRun_ConfigValidation(t *testing.T) {
 func TestRun_UseCaseIntegration(t *testing.T) {
 	t.Run("usecase interface validation", func(t *testing.T) {
 		mockUseCase := new(MockChatUseCase)
-		mockUseCase.On("ProcessChat", "test prompt").Return("test response", nil)
+		promptRequest := domain.PromptRequest{Prompt: "test prompt"}
+		expectedResponse := &domain.ChatResponse{MessageResponse: "test response"}
+		// Fix: Use mock.Anything instead of specific context type
+		mockUseCase.On("ProcessChat", mock.Anything, promptRequest).Return(expectedResponse, nil)
 
 		// Test that the mock implements the interface correctly
 		var usecase domain.ChatUseCase = mockUseCase
 		assert.NotNil(t, usecase)
 
 		// Test the mock functionality
-		response, err := usecase.ProcessChat(context.Background(), domain.PromptRequest{Prompt: "test prompt"})
+		response, err := usecase.ProcessChat(context.Background(), promptRequest)
 		assert.NoError(t, err)
-		assert.Equal(t, "test response", response)
+		assert.NotNil(t, response)
+		assert.Equal(t, "test response", response.MessageResponse)
 
 		mockUseCase.AssertExpectations(t)
 	})
 
 	t.Run("usecase error handling", func(t *testing.T) {
 		mockUseCase := new(MockChatUseCase)
-		mockUseCase.On("ProcessChat", "error prompt").Return("", errors.New("test error"))
+		promptRequest := domain.PromptRequest{Prompt: "error prompt"}
+		expectedError := errors.New("test error")
+		// Fix: Use mock.Anything instead of specific context type
+		mockUseCase.On("ProcessChat", mock.Anything, promptRequest).Return((*domain.ChatResponse)(nil), expectedError)
 
-		response, err := mockUseCase.ProcessChat("error prompt")
+		response, err := mockUseCase.ProcessChat(context.Background(), promptRequest)
 		assert.Error(t, err)
-		assert.Empty(t, response)
+		assert.Nil(t, response)
 		assert.Equal(t, "test error", err.Error())
 
 		mockUseCase.AssertExpectations(t)
@@ -176,7 +186,8 @@ func TestRun_ServerStartup(t *testing.T) {
 // Integration test that verifies the HTTP server setup without actually starting it
 func TestRun_HTTPServerIntegration(t *testing.T) {
 	mockUseCase := new(MockChatUseCase)
-	mockUseCase.On("ProcessChat", mock.Anything).Return("test response", nil)
+	expectedResponse := &domain.ChatResponse{MessageResponse: "test response"}
+	mockUseCase.On("ProcessChat", mock.Anything, mock.Anything).Return(expectedResponse, nil)
 
 	cfg := config.Config{
 		Port:       "8080",

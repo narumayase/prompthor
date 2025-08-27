@@ -48,7 +48,7 @@ func TestChatHandler_HandleChat_Success(t *testing.T) {
 		Prompt: "Hello, how are you?",
 	}
 	expectedResponse := &domain.ChatResponse{
-		MessageResponse: "I'm doing well, thank you!",
+		Response: "I'm doing well, thank you!",
 	}
 
 	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return(expectedResponse, nil)
@@ -70,7 +70,7 @@ func TestChatHandler_HandleChat_Success(t *testing.T) {
 	var response domain.ChatResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResponse.MessageResponse, response.MessageResponse)
+	assert.Equal(t, expectedResponse.Response, response.Response)
 
 	mockUseCase.AssertExpectations(t)
 }
@@ -141,7 +141,7 @@ func TestChatHandler_HandleChat_MissingContentType(t *testing.T) {
 
 	request := domain.PromptRequest{Prompt: "Test prompt"}
 	expectedResponse := &domain.ChatResponse{
-		MessageResponse: "MessageResponse to test prompt",
+		Response: "Response to test prompt",
 	}
 	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return(expectedResponse, nil)
 
@@ -159,7 +159,7 @@ func TestChatHandler_HandleChat_MissingContentType(t *testing.T) {
 	var response domain.ChatResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResponse.MessageResponse, response.MessageResponse)
+	assert.Equal(t, expectedResponse.Response, response.Response)
 
 	mockUseCase.AssertExpectations(t)
 }
@@ -182,7 +182,7 @@ func TestChatHandler_HandleChat_LongPrompt(t *testing.T) {
 		Prompt: longPrompt,
 	}
 	expectedResponse := &domain.ChatResponse{
-		MessageResponse: "MessageResponse to long prompt",
+		Response: "Response to long prompt",
 	}
 
 	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return(expectedResponse, nil)
@@ -199,7 +199,7 @@ func TestChatHandler_HandleChat_LongPrompt(t *testing.T) {
 	var response domain.ChatResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResponse.MessageResponse, response.MessageResponse)
+	assert.Equal(t, expectedResponse.Response, response.Response)
 
 	mockUseCase.AssertExpectations(t)
 }
@@ -216,7 +216,7 @@ func TestChatHandler_HandleChat_WithHeaders(t *testing.T) {
 		Prompt: "Test with headers",
 	}
 	expectedResponse := &domain.ChatResponse{
-		MessageResponse: "Response with headers",
+		Response: "Response with headers",
 	}
 
 	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return(expectedResponse, nil)
@@ -235,7 +235,7 @@ func TestChatHandler_HandleChat_WithHeaders(t *testing.T) {
 	var response domain.ChatResponse
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	assert.NoError(t, err)
-	assert.Equal(t, expectedResponse.MessageResponse, response.MessageResponse)
+	assert.Equal(t, expectedResponse.Response, response.Response)
 
 	mockUseCase.AssertExpectations(t)
 }

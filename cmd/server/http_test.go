@@ -24,7 +24,7 @@ func (m *MockChatUseCase) ProcessChat(ctx context.Context, prompt domain.PromptR
 func TestRun_ServerConfiguration(t *testing.T) {
 	// Create a mock use case
 	mockUseCase := new(MockChatUseCase)
-	expectedResponse := &domain.ChatResponse{MessageResponse: "test response"}
+	expectedResponse := &domain.ChatResponse{Response: "test response"}
 	mockUseCase.On("ProcessChat", mock.Anything, mock.Anything).Return(expectedResponse, nil)
 
 	// Test configuration
@@ -50,7 +50,7 @@ func TestRun_ServerConfiguration(t *testing.T) {
 func TestRun_RouterSetup(t *testing.T) {
 	// Create a mock use case
 	mockUseCase := new(MockChatUseCase)
-	expectedResponse := &domain.ChatResponse{MessageResponse: "response"}
+	expectedResponse := &domain.ChatResponse{Response: "response"}
 	promptRequest := domain.PromptRequest{Prompt: "test"}
 	mockUseCase.On("ProcessChat", mock.Anything, promptRequest).Return(expectedResponse, nil)
 
@@ -136,7 +136,7 @@ func TestRun_UseCaseIntegration(t *testing.T) {
 	t.Run("usecase interface validation", func(t *testing.T) {
 		mockUseCase := new(MockChatUseCase)
 		promptRequest := domain.PromptRequest{Prompt: "test prompt"}
-		expectedResponse := &domain.ChatResponse{MessageResponse: "test response"}
+		expectedResponse := &domain.ChatResponse{Response: "test response"}
 		// Fix: Use mock.Anything instead of specific context type
 		mockUseCase.On("ProcessChat", mock.Anything, promptRequest).Return(expectedResponse, nil)
 
@@ -148,7 +148,7 @@ func TestRun_UseCaseIntegration(t *testing.T) {
 		response, err := usecase.ProcessChat(context.Background(), promptRequest)
 		assert.NoError(t, err)
 		assert.NotNil(t, response)
-		assert.Equal(t, "test response", response.MessageResponse)
+		assert.Equal(t, "test response", response.Response)
 
 		mockUseCase.AssertExpectations(t)
 	})
@@ -186,7 +186,7 @@ func TestRun_ServerStartup(t *testing.T) {
 // Integration test that verifies the HTTP server setup without actually starting it
 func TestRun_HTTPServerIntegration(t *testing.T) {
 	mockUseCase := new(MockChatUseCase)
-	expectedResponse := &domain.ChatResponse{MessageResponse: "test response"}
+	expectedResponse := &domain.ChatResponse{Response: "test response"}
 	mockUseCase.On("ProcessChat", mock.Anything, mock.Anything).Return(expectedResponse, nil)
 
 	cfg := config.Config{

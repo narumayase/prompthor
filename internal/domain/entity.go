@@ -7,7 +7,7 @@ type PromptRequest struct {
 
 // ChatResponse represents the chat response
 type ChatResponse struct {
-	MessageResponse string `json:"message_response"`
+	Response string `json:"response"`
 }
 
 // ErrorResponse represents an error response

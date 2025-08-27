@@ -29,7 +29,7 @@ func (uc *ChatUseCaseImpl) ProcessChat(ctx context.Context, prompt domain.Prompt
 		return nil, err
 	}
 	response := domain.ChatResponse{
-		MessageResponse: messageResponse,
+		Response: messageResponse,
 	}
 	if err := uc.produceMessage(ctx, response); err != nil {
 		log.Error().Err(err).Msg("Failed to send message to queue")

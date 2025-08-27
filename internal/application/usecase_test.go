@@ -61,7 +61,7 @@ func TestChatUseCaseImpl_ProcessChat_Success(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
-	assert.Equal(t, expectedResponse, result.MessageResponse)
+	assert.Equal(t, expectedResponse, result.Response)
 	mockChatRepo.AssertExpectations(t)
 	mockProducerRepo.AssertExpectations(t)
 }
@@ -105,7 +105,7 @@ func TestChatUseCaseImpl_ProcessChat_EmptyPrompt(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
-	assert.Equal(t, expectedResponse, result.MessageResponse)
+	assert.Equal(t, expectedResponse, result.Response)
 	mockChatRepo.AssertExpectations(t)
 	mockProducerRepo.AssertExpectations(t)
 }
@@ -124,7 +124,7 @@ func TestChatUseCaseImpl_ProcessChat_LongPrompt(t *testing.T) {
 		longPrompt += "This is a very long prompt. "
 	}
 	promptRequest := domain.PromptRequest{Prompt: longPrompt}
-	expectedResponse := "MessageResponse to long prompt"
+	expectedResponse := "Response to long prompt"
 
 	mockChatRepo.On("Send", promptRequest).Return(expectedResponse, nil)
 	mockProducerRepo.On("Produce", mock.Anything, mock.Anything).Return(nil)
@@ -133,7 +133,7 @@ func TestChatUseCaseImpl_ProcessChat_LongPrompt(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
-	assert.Equal(t, expectedResponse, result.MessageResponse)
+	assert.Equal(t, expectedResponse, result.Response)
 	mockChatRepo.AssertExpectations(t)
 	mockProducerRepo.AssertExpectations(t)
 }
@@ -147,7 +147,7 @@ func TestChatUseCaseImpl_ProcessChat_SpecialCharacters(t *testing.T) {
 	}
 
 	promptRequest := domain.PromptRequest{Prompt: "Hello! @#$%^&*()_+ Ã¤Â½ Ã¥Â¥Â½ Ã°Å¸Å¡â‚¬"}
-	expectedResponse := "MessageResponse with special characters handled"
+	expectedResponse := "Response with special characters handled"
 
 	mockChatRepo.On("Send", promptRequest).Return(expectedResponse, nil)
 	mockProducerRepo.On("Produce", mock.Anything, mock.Anything).Return(nil)
@@ -156,7 +156,7 @@ func TestChatUseCaseImpl_ProcessChat_SpecialCharacters(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
-	assert.Equal(t, expectedResponse, result.MessageResponse)
+	assert.Equal(t, expectedResponse, result.Response)
 	mockChatRepo.AssertExpectations(t)
 	mockProducerRepo.AssertExpectations(t)
 }
@@ -177,6 +177,6 @@ func TestChatUseCaseImpl_ProcessChat_WithNilProducer(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
-	assert.Equal(t, expectedResponse, result.MessageResponse)
+	assert.Equal(t, expectedResponse, result.Response)
 	mockChatRepo.AssertExpectations(t)
 }

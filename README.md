@@ -88,7 +88,7 @@ Sends a prompt to the selected LLM and receives a response.
 
 ```json
 {
-  "message_response": "The capital of France is Paris."
+  "response": "The capital of France is Paris."
 }
 ```
 

@@ -140,7 +140,7 @@ func TestOpenAIRepository_SendMessage_LongPrompt(t *testing.T) {
 	mockClient := &mocks.MockOpenAIClient{}
 
 	longPrompt := strings.Repeat("This is a very long prompt. ", 100)
-	mockResponse := mocks.CreateMockOpenAIResponse("MessageResponse to long prompt")
+	mockResponse := mocks.CreateMockOpenAIResponse("Response to long prompt")
 	mockClient.On("CreateChatCompletion", mock.AnythingOfType("context.backgroundCtx"), mock.AnythingOfType("openai.ChatCompletionRequest")).Return(mockResponse, nil)
 
 	// Create repository with mock client
@@ -149,7 +149,7 @@ func TestOpenAIRepository_SendMessage_LongPrompt(t *testing.T) {
 	promptRequest := domain.PromptRequest{Prompt: longPrompt}
 	response, err := repo.Send(promptRequest)
 	assert.NoError(t, err)
-	assert.Equal(t, "MessageResponse to long prompt", response)
+	assert.Equal(t, "Response to long prompt", response)
 
 	mockClient.AssertExpectations(t)
 }

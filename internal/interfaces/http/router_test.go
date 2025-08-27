@@ -199,7 +199,7 @@ func TestRouter_MiddlewareOrder(t *testing.T) {
 		// CORS middleware should set headers
 		assert.Equal(t, "*", w.Header().Get("Access-Control-Allow-Origin"))
 
-		// MessageResponse should be successful (no panic from error handler)
+		// Response should be successful (no panic from error handler)
 		var response map[string]interface{}
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)

@@ -2,8 +2,8 @@ package main
 
 import (
 	"anyompt/cmd/server"
+	"anyompt/config"
 	"anyompt/internal/application"
-	"anyompt/internal/config"
 	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/client"
 	"anyompt/internal/infrastructure/repository"

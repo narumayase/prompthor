@@ -1,11 +1,11 @@
 package server
 
 import (
+	"anyompt/config"
 	"errors"
 	"log"
 	"net/http"
 
-	"anyompt/internal/config"
 	"anyompt/internal/domain"
 	httphandler "anyompt/internal/interfaces/http"
 )

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"anyompt/internal/config"
+	"anyompt/config"
 	"context"
 	"testing"
 

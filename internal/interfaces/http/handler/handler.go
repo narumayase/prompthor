@@ -4,6 +4,7 @@ import (
 	"anyompt/internal/domain"
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -33,6 +34,9 @@ func (h *ChatHandler) HandleChat(c *gin.Context) {
 	ctx := context.WithValue(c.Request.Context(), "correlation_id", c.GetHeader("X-Correlation-ID"))
 	ctx = context.WithValue(ctx, "routing_id", c.GetHeader("X-Routing-ID"))
 	// TODO y otro middleware con el request id.. y el logging... ver
+
+	log.Debug().Msgf("X-Correlation-ID: %v", c.GetHeader("X-Correlation-ID"))
+	log.Debug().Msgf("X-Routing-ID: %v", c.GetHeader("X-Routing-ID"))
 
 	response, err := h.usecase.ProcessChat(ctx, request)
 	if err != nil {

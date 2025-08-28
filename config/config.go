@@ -3,7 +3,7 @@ package config
 import (
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
-	"log"
+	"github.com/rs/zerolog/log"
 	"os"
 	"strings"
 )
@@ -16,17 +16,17 @@ type Config struct {
 	GroqUrl      string
 	ChatModel    string
 	KafkaEnabled bool
-	KafkaBrokers string
+	KafkaBroker  string
 	KafkaTopic   string
 }
 
 // Load loads configuration from environment variables or an .env file
 func Load() Config {
+	setLogLevel()
 	// Load .env file if it exists (ignore error if file doesn't exist)
 	if err := godotenv.Load(); err != nil {
 		log.Printf("No .env file found or error loading .env file: %v", err)
 	}
-	setLogLevel()
 
 	return Config{
 		Port:         getEnv("PORT", "8080"),
@@ -35,7 +35,7 @@ func Load() Config {
 		GroqUrl:      getEnv("GROQ_URL", "https://api.groq.com/openai/v1/responses"),
 		ChatModel:    getEnv("CHAT_MODEL", "openai/gpt-oss-20b"),
 		KafkaEnabled: getEnvAsBool("KAFKA_ENABLED", false),
-		KafkaBrokers: getEnv("KAFKA_BROKERS", "localhost:9092"),
+		KafkaBroker:  getEnv("KAFKA_BROKER", "localhost:9092"),
 		KafkaTopic:   getEnv("KAFKA_TOPIC", "anyompt-topic"),
 	}
 }
@@ -43,6 +43,7 @@ func Load() Config {
 // getEnv gets an environment variable or returns a default value
 func getEnv(key, defaultValue string) string {
 	if value := os.Getenv(key); value != "" {
+		log.Debug().Msgf("ENV %s: %v", key, value)
 		return value
 	}
 	return defaultValue
@@ -51,6 +52,7 @@ func getEnv(key, defaultValue string) string {
 // getEnvAsBool gets an environment variable as a boolean or returns a default value
 func getEnvAsBool(key string, defaultValue bool) bool {
 	if value := os.Getenv(key); value != "" {
+		log.Debug().Msgf("ENV %s: %v", key, value)
 		return strings.ToLower(value) == "true"
 	}
 	return defaultValue

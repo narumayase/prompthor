@@ -13,6 +13,7 @@ func SetupRouter(chatUseCase domain.ChatUseCase) *gin.Engine {
 	router := gin.Default()
 
 	// Add middlewares
+	router.Use(middleware.Logger())
 	router.Use(middleware.CORS())
 	router.Use(middleware.ErrorHandler())
 

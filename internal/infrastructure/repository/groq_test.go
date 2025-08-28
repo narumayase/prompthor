@@ -1,13 +1,12 @@
 package repository
 
 import (
+	"anyompt/config"
 	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/client/mocks"
 	"errors"
 	"net/http"
 	"testing"
-
-	"anyompt/internal/config"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

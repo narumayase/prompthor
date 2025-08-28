@@ -55,7 +55,7 @@ Create a `.env` file based on `env.example`:
 - `PORT`: Server port (default: 8080)
 - `LOG_LEVEL`: Log level (debug, info, warn, error, fatal, panic - default: info)
 - `KAFKA_ENABLED`: Enable Kafka integration (true or false)
-- `KAFKA_BROKERS`: Comma-separated list of Kafka brokers
+- `KAFKA_BROKER`: Comma-separated list of Kafka brokers
 - `KAFKA_TOPIC`: Kafka topic to send events to
 
 ### OpenAI API Setup

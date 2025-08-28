@@ -1,7 +1,7 @@
 package server
 
 import (
-	"anyompt/internal/config"
+	"anyompt/config"
 	"anyompt/internal/domain"
 	"context"
 	"errors"

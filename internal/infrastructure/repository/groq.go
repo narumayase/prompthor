@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"anyompt/internal/config"
+	"anyompt/config"
 	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/client"
 	"anyompt/internal/infrastructure/response"

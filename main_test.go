@@ -1,7 +1,7 @@
 package main
 
 import (
-	"anyompt/internal/config"
+	"anyompt/config"
 	"anyompt/internal/infrastructure/repository"
 	"github.com/stretchr/testify/assert"
 	"testing"

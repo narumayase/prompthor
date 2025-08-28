@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"anyompt/internal/config"
+	"anyompt/config"
 	"anyompt/internal/domain"
 	"context"
 	"fmt"
@@ -21,12 +21,12 @@ func NewKafkaRepository(cfg config.Config) (domain.ProducerRepository, error) {
 		return nil, nil
 	}
 
-	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": cfg.KafkaBrokers})
+	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": cfg.KafkaBroker})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Kafka producer: %w", err)
 	}
 
-	log.Info().Msgf("Successfully created Kafka producer for brokers: %s", cfg.KafkaBrokers)
+	log.Info().Msgf("Successfully created Kafka producer for brokers: %s", cfg.KafkaBroker)
 
 	return &KafkaRepository{
 		producer: p,
@@ -47,6 +47,10 @@ func (r *KafkaRepository) Produce(ctx context.Context, message []byte) error {
 		{Key: "correlation_id", Value: []byte(correlationID)},
 		{Key: "origin", Value: []byte("anyompt")},
 	}
+	log.Debug().Msgf("sending message to Kafka with headers: %v", headers)
+	log.Debug().Msgf("sending message to Kafka with payload: %v", message)
+	log.Debug().Msgf("sending message to Kafka with key: %s", routingID)
+
 	deliveryChan := make(chan kafka.Event)
 	err := r.producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &r.topic, Partition: kafka.PartitionAny},
@@ -66,7 +70,7 @@ func (r *KafkaRepository) Produce(ctx context.Context, message []byte) error {
 		return fmt.Errorf("delivery failed: %v", m.TopicPartition.Error)
 	}
 
-	log.Debug().Msgf("Delivered message to topic %s [%d] at offset %v",
+	log.Debug().Msgf("delivered message to topic %s [%d] at offset %v",
 		*m.TopicPartition.Topic, m.TopicPartition.Partition, m.TopicPartition.Offset)
 
 	close(deliveryChan)

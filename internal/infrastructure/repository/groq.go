@@ -15,12 +15,12 @@ import (
 type GroqRepository struct {
 	apiKey     string
 	model      string
-	httpClient domain.HTTPClient
+	httpClient http.HTTPClient
 	baseURL    string
 }
 
 // NewGroqRepository creates a new instance of the Groq repository
-func NewGroqRepository(config config.Config, httpClient domain.HTTPClient) (domain.LLMRepository, error) {
+func NewGroqRepository(config config.Config, httpClient http.HTTPClient) (domain.LLMRepository, error) {
 	return &GroqRepository{
 		apiKey:     config.GroqAPIKey,
 		model:      config.ChatModel,

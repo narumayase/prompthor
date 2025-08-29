@@ -7,6 +7,7 @@ import (
 	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/client"
 	"anyompt/internal/infrastructure/repository"
+	"anyompt/internal/interfaces/http"
 	anysherhttp "github.com/narumayase/anysher/http"
 	"github.com/rs/zerolog/log"
 	"net/http"

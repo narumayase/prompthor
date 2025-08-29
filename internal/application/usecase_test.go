@@ -15,7 +15,7 @@ type MockLLMRepository struct {
 	mock.Mock
 }
 
-func (m *MockLLMRepository) Send(prompt domain.PromptRequest) (string, error) {
+func (m *MockLLMRepository) Send(ctx context.Context, prompt domain.PromptRequest) (string, error) {
 	args := m.Called(prompt)
 	return args.String(0), args.Error(1)
 }

@@ -4,9 +4,9 @@ import (
 	"anyompt/config"
 	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/response"
+	"anyompt/internal/interfaces/http"
 	"context"
 	"encoding/json"
-	anysherhttp "github.com/narumayase/anysher/http"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 )
@@ -15,12 +15,12 @@ import (
 type GroqRepository struct {
 	apiKey     string
 	model      string
-	httpClient *anysherhttp.Client
+	httpClient domain.HTTPClient
 	baseURL    string
 }
 
 // NewGroqRepository creates a new instance of the Groq repository
-func NewGroqRepository(config config.Config, httpClient *anysherhttp.Client) (domain.LLMRepository, error) {
+func NewGroqRepository(config config.Config, httpClient domain.HTTPClient) (domain.LLMRepository, error) {
 	return &GroqRepository{
 		apiKey:     config.GroqAPIKey,
 		model:      config.ChatModel,
@@ -41,12 +41,7 @@ func (r *GroqRepository) Send(ctx context.Context, prompt domain.PromptRequest) 
 		return "", err
 	}
 	// send to Groq
-	resp, err := r.httpClient.Post(ctx, anysherhttp.Payload{
-		URL:     r.baseURL,
-		Token:   r.apiKey,
-		Headers: map[string]string{"Content-Type": "application/json"},
-		Content: body,
-	})
+	resp, err := r.httpClient.Post(r.baseURL, "application/json", body)
 	if err != nil {
 		return "", err
 	}

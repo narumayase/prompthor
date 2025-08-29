@@ -4,6 +4,7 @@ import (
 	"anyompt/config"
 	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/client/mocks"
+	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -106,7 +107,7 @@ func TestGroqRepository_SendMessage_Success(t *testing.T) {
 		]
 	}`)
 
-	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string")).Return(mockResponse, nil)
+	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string"), mock.Anything).Return(mockResponse, nil)
 
 	// Create repository with mock client
 	cfg := config.Config{
@@ -117,7 +118,7 @@ func TestGroqRepository_SendMessage_Success(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Test the actual Send method
-	response, err := repo.Send(domain.PromptRequest{Prompt: "Hello world"})
+	response, err := repo.Send(context.Background(), domain.PromptRequest{Prompt: "Hello world"})
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello! How can I help you?", response)
 
@@ -128,7 +129,7 @@ func TestGroqRepository_SendMessage_HTTPError(t *testing.T) {
 	// Create mock HTTP client that returns HTTP error
 	mockClient := &mocks.MockHTTPClient{}
 
-	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string")).Return((*http.Response)(nil), errors.New("network error"))
+	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string"), mock.Anything).Return((*http.Response)(nil), errors.New("network error"))
 
 	cfg := config.Config{
 		GroqAPIKey: "test-api-key",
@@ -137,7 +138,7 @@ func TestGroqRepository_SendMessage_HTTPError(t *testing.T) {
 	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
-	response, err := repo.Send(domain.PromptRequest{Prompt: "Hello world"})
+	response, err := repo.Send(context.Background(), domain.PromptRequest{Prompt: "Hello world"})
 	assert.Error(t, err)
 	assert.Empty(t, response)
 	assert.Contains(t, err.Error(), "network error")
@@ -150,7 +151,7 @@ func TestGroqRepository_SendMessage_InvalidJSON(t *testing.T) {
 	mockClient := &mocks.MockHTTPClient{}
 
 	mockResponse := mocks.CreateMockResponse(200, `invalid json`)
-	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string")).Return(mockResponse, nil)
+	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string"), mock.Anything).Return(mockResponse, nil)
 
 	cfg := config.Config{
 		GroqAPIKey: "test-api-key",
@@ -159,7 +160,7 @@ func TestGroqRepository_SendMessage_InvalidJSON(t *testing.T) {
 	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
-	response, err := repo.Send(domain.PromptRequest{Prompt: "Hello world"})
+	response, err := repo.Send(context.Background(), domain.PromptRequest{Prompt: "Hello world"})
 	assert.Error(t, err)
 	assert.Empty(t, response)
 
@@ -174,7 +175,7 @@ func TestGroqRepository_SendMessage_EmptyOutput(t *testing.T) {
 		"id": "test-id",
 		"output": []
 	}`)
-	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string")).Return(mockResponse, nil)
+	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string"), mock.Anything).Return(mockResponse, nil)
 
 	cfg := config.Config{
 		GroqAPIKey: "test-api-key",
@@ -183,7 +184,7 @@ func TestGroqRepository_SendMessage_EmptyOutput(t *testing.T) {
 	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
-	response, err := repo.Send(domain.PromptRequest{Prompt: "Hello world"})
+	response, err := repo.Send(context.Background(), domain.PromptRequest{Prompt: "Hello world"})
 	assert.NoError(t, err)
 	assert.Empty(t, response)
 
@@ -204,7 +205,7 @@ func TestGroqRepository_SendMessage_NonMessageType(t *testing.T) {
 			}
 		]
 	}`)
-	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string")).Return(mockResponse, nil)
+	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string"), mock.Anything).Return(mockResponse, nil)
 
 	cfg := config.Config{
 		GroqAPIKey: "test-api-key",
@@ -213,7 +214,7 @@ func TestGroqRepository_SendMessage_NonMessageType(t *testing.T) {
 	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
-	response, err := repo.Send(domain.PromptRequest{Prompt: "Hello world"})
+	response, err := repo.Send(context.Background(), domain.PromptRequest{Prompt: "Hello world"})
 	assert.NoError(t, err)
 	assert.Empty(t, response)
 
@@ -240,7 +241,7 @@ func TestGroqRepository_SendMessage_NonTextContent(t *testing.T) {
 			}
 		]
 	}`)
-	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string")).Return(mockResponse, nil)
+	mockClient.On("Post", mock.Anything, mock.AnythingOfType("string"), mock.Anything).Return(mockResponse, nil)
 
 	cfg := config.Config{
 		GroqAPIKey: "test-api-key",
@@ -249,7 +250,7 @@ func TestGroqRepository_SendMessage_NonTextContent(t *testing.T) {
 	repo, err := NewGroqRepository(cfg, mockClient)
 	assert.NoError(t, err)
 
-	response, err := repo.Send(domain.PromptRequest{Prompt: "Hello world"})
+	response, err := repo.Send(context.Background(), domain.PromptRequest{Prompt: "Hello world"})
 	assert.NoError(t, err)
 	assert.Empty(t, response)
 

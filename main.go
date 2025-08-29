@@ -44,8 +44,11 @@ func initializeGroqRepository(config config.Config) domain.LLMRepository {
 	// Create a new HTTP client
 	httpClient := anysherhttp.NewClient(&http.Client{}, cfg)
 
+	// Wrap the HTTP client in the AnysherHTTPClient adapter
+	anysherClient := client.NewAnysherHTTPClient(httpClient)
+
 	log.Info().Msg("🚀 Starting with Groq API")
-	chatRepo, err := repository.NewGroqRepository(config, httpClient)
+	chatRepo, err := repository.NewGroqRepository(config, anysherClient)
 	if err != nil {
 		log.Error().Err(err).Msgf("failed to create Groq repository: %v", err)
 		log.Fatal()

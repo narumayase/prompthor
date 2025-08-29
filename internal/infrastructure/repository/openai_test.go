@@ -4,6 +4,7 @@ import (
 	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/client"
 	"anyompt/internal/infrastructure/client/mocks"
+	"context"
 	"errors"
 	"os"
 	"strings"
@@ -71,7 +72,7 @@ func TestOpenAIRepository_SendMessage_Success(t *testing.T) {
 
 	// Test the actual Send method with domain.PromptRequest
 	promptRequest := domain.PromptRequest{Prompt: "Hello world"}
-	response, err := repo.Send(promptRequest)
+	response, err := repo.Send(context.Background(), promptRequest)
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello! How can I assist you today?", response)
 
@@ -88,7 +89,7 @@ func TestOpenAIRepository_SendMessage_APIError(t *testing.T) {
 	repo, _ := NewOpenAIRepository(mockClient)
 
 	promptRequest := domain.PromptRequest{Prompt: "Hello world"}
-	response, err := repo.Send(promptRequest)
+	response, err := repo.Send(context.Background(), promptRequest)
 	assert.Error(t, err)
 	assert.Empty(t, response)
 	assert.Contains(t, err.Error(), "error calling OpenAI API")
@@ -107,7 +108,7 @@ func TestOpenAIRepository_SendMessage_EmptyResponse(t *testing.T) {
 	repo, _ := NewOpenAIRepository(mockClient)
 
 	promptRequest := domain.PromptRequest{Prompt: "Hello world"}
-	response, err := repo.Send(promptRequest)
+	response, err := repo.Send(context.Background(), promptRequest)
 	assert.Error(t, err)
 	assert.Empty(t, response)
 	assert.Contains(t, err.Error(), "no response from OpenAI API")
@@ -128,7 +129,7 @@ func TestOpenAIRepository_SendMessage_EmptyPrompt(t *testing.T) {
 
 	// Test with empty prompt
 	promptRequest := domain.PromptRequest{Prompt: ""}
-	response, err := repo.Send(promptRequest)
+	response, err := repo.Send(context.Background(), promptRequest)
 	assert.NoError(t, err)
 	assert.Equal(t, "Please provide a prompt.", response)
 
@@ -147,7 +148,7 @@ func TestOpenAIRepository_SendMessage_LongPrompt(t *testing.T) {
 	repo, _ := NewOpenAIRepository(mockClient)
 
 	promptRequest := domain.PromptRequest{Prompt: longPrompt}
-	response, err := repo.Send(promptRequest)
+	response, err := repo.Send(context.Background(), promptRequest)
 	assert.NoError(t, err)
 	assert.Equal(t, "Response to long prompt", response)
 

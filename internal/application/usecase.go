@@ -49,5 +49,5 @@ func (uc *ChatUseCaseImpl) produceMessage(ctx context.Context, response domain.C
 		log.Error().Err(err).Msg("Failed to marshal message")
 		return err
 	}
-	return uc.producerRepository.Produce(ctx, message)
+	return uc.producerRepository.Send(ctx, message)
 }

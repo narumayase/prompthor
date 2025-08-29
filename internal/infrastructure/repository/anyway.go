@@ -16,15 +16,15 @@ type AnywayRepository struct {
 }
 
 // NewAnywayRepository creates a new instance of the Anyway repository
-func NewAnywayRepository(config config.Config, httpClient *anysherhttp.Client) (domain.ProducerRepository, error) {
+func NewAnywayRepository(config config.Config, httpClient *anysherhttp.Client) domain.ProducerRepository {
 	return &AnywayRepository{
 		model:      config.ChatModel,
 		httpClient: httpClient,
 		baseURL:    config.GatewayAPIUrl,
-	}, nil
+	}
 }
 
-func (r *AnywayRepository) Produce(ctx context.Context, message []byte) error {
+func (r *AnywayRepository) Send(ctx context.Context, message []byte) error {
 	correlationID := ctx.Value("correlation_id").(string)
 	routingID := ctx.Value("routing_id").(string)
 

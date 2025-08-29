@@ -35,8 +35,8 @@ func (h *ChatHandler) HandleChat(c *gin.Context) {
 	ctx = context.WithValue(ctx, "routing_id", c.GetHeader("X-Routing-ID"))
 	// TODO y otro middleware con el request id.. y el logging... ver
 
-	log.Debug().Msgf("X-Correlation-ID received: %v", c.GetHeader("X-Correlation-ID"))
-	log.Debug().Msgf("X-Routing-ID received: %v", c.GetHeader("X-Routing-ID"))
+	log.Info().Msgf("X-Correlation-ID received: %v", c.GetHeader("X-Correlation-ID"))
+	log.Info().Msgf("X-Routing-ID received: %v", c.GetHeader("X-Routing-ID"))
 
 	response, err := h.usecase.ProcessChat(ctx, request)
 	if err != nil {

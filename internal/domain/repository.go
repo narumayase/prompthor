@@ -9,5 +9,5 @@ type LLMRepository interface {
 
 // ProducerRepository defines the interface for the producer repository for queue messages
 type ProducerRepository interface {
-	Produce(ctx context.Context, message []byte) error
+	Send(ctx context.Context, message []byte) error
 }

@@ -28,7 +28,7 @@ type MockProducerRepository struct {
 func (m *MockProducerRepository) Close() {
 }
 
-func (m *MockProducerRepository) Produce(ctx context.Context, message []byte) error {
+func (m *MockProducerRepository) Send(ctx context.Context, message []byte) error {
 	args := m.Called(ctx, message)
 	return args.Error(0)
 }
@@ -55,7 +55,7 @@ func TestChatUseCaseImpl_ProcessChat_Success(t *testing.T) {
 
 	mockChatRepo.On("Send", promptRequest).Return(expectedResponse, nil)
 	// Fix: Use mock.Anything for context instead of specific type
-	mockProducerRepo.On("Produce", mock.Anything, mock.Anything).Return(nil)
+	mockProducerRepo.On("Send", mock.Anything, mock.Anything).Return(nil)
 
 	result, err := useCase.ProcessChat(context.Background(), promptRequest)
 
@@ -99,7 +99,7 @@ func TestChatUseCaseImpl_ProcessChat_EmptyPrompt(t *testing.T) {
 	expectedResponse := "Please provide a valid prompt"
 
 	mockChatRepo.On("Send", promptRequest).Return(expectedResponse, nil)
-	mockProducerRepo.On("Produce", mock.Anything, mock.Anything).Return(nil)
+	mockProducerRepo.On("Send", mock.Anything, mock.Anything).Return(nil)
 
 	result, err := useCase.ProcessChat(context.Background(), promptRequest)
 
@@ -127,7 +127,7 @@ func TestChatUseCaseImpl_ProcessChat_LongPrompt(t *testing.T) {
 	expectedResponse := "Response to long prompt"
 
 	mockChatRepo.On("Send", promptRequest).Return(expectedResponse, nil)
-	mockProducerRepo.On("Produce", mock.Anything, mock.Anything).Return(nil)
+	mockProducerRepo.On("Send", mock.Anything, mock.Anything).Return(nil)
 
 	result, err := useCase.ProcessChat(context.Background(), promptRequest)
 
@@ -150,7 +150,7 @@ func TestChatUseCaseImpl_ProcessChat_SpecialCharacters(t *testing.T) {
 	expectedResponse := "Response with special characters handled"
 
 	mockChatRepo.On("Send", promptRequest).Return(expectedResponse, nil)
-	mockProducerRepo.On("Produce", mock.Anything, mock.Anything).Return(nil)
+	mockProducerRepo.On("Send", mock.Anything, mock.Anything).Return(nil)
 
 	result, err := useCase.ProcessChat(context.Background(), promptRequest)
 

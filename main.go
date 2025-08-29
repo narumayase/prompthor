@@ -7,7 +7,6 @@ import (
 	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/client"
 	"anyompt/internal/infrastructure/repository"
-	"anyompt/internal/interfaces/http"
 	anysherhttp "github.com/narumayase/anysher/http"
 	"github.com/rs/zerolog/log"
 	"net/http"
@@ -45,11 +44,8 @@ func initializeGroqRepository(config config.Config) domain.LLMRepository {
 	// Create a new HTTP client
 	httpClient := anysherhttp.NewClient(&http.Client{}, cfg)
 
-	// Wrap the HTTP client in the AnysherHTTPClient adapter
-	anysherClient := client.NewAnysherHTTPClient(httpClient)
-
 	log.Info().Msg("🚀 Starting with Groq API")
-	chatRepo, err := repository.NewGroqRepository(config, anysherClient)
+	chatRepo, err := repository.NewGroqRepository(config, httpClient)
 	if err != nil {
 		log.Error().Err(err).Msgf("failed to create Groq repository: %v", err)
 		log.Fatal()
@@ -77,10 +73,5 @@ func initializeProducerRepository(config config.Config) domain.ProducerRepositor
 	// Create a new HTTP client
 	httpClient := anysherhttp.NewClient(&http.Client{}, cfg)
 
-	chatRepo, err := repository.NewAnywayRepository(config, httpClient)
-	if err != nil {
-		log.Error().Err(err).Msgf("failed to create producer repository: %v", err)
-		log.Fatal()
-	}
-	return chatRepo
+	return repository.NewAnywayRepository(config, httpClient)
 }

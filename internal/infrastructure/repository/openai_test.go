@@ -3,7 +3,7 @@ package repository
 import (
 	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/client"
-	"anyompt/internal/infrastructure/client/mocks"
+	"context"
 	"errors"
 	"os"
 	"strings"
@@ -14,9 +14,60 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+// MockOpenAIClient is a mock implementation of OpenAIClient for testing
+type MockOpenAIClient struct {
+	mock.Mock
+}
+
+func (m *MockOpenAIClient) CreateChatCompletion(ctx context.Context, request openai.ChatCompletionRequest) (openai.ChatCompletionResponse, error) {
+	args := m.Called(ctx, request)
+	return args.Get(0).(openai.ChatCompletionResponse), args.Error(1)
+}
+
+// Helper function to create mock OpenAI responses
+func CreateMockOpenAIResponse(content string) openai.ChatCompletionResponse {
+	return openai.ChatCompletionResponse{
+		ID:      "chatcmpl-test",
+		Object:  "chat.completion",
+		Created: 1677652288,
+		Model:   "gpt-3.5-turbo",
+		Choices: []openai.ChatCompletionChoice{
+			{
+				Index: 0,
+				Message: openai.ChatCompletionMessage{
+					Role:    openai.ChatMessageRoleAssistant,
+					Content: content,
+				},
+				FinishReason: "stop",
+			},
+		},
+		Usage: openai.Usage{
+			PromptTokens:     10,
+			CompletionTokens: 20,
+			TotalTokens:      30,
+		},
+	}
+}
+
+// Helper function to create empty OpenAI response (no choices)
+func CreateEmptyOpenAIResponse() openai.ChatCompletionResponse {
+	return openai.ChatCompletionResponse{
+		ID:      "chatcmpl-test",
+		Object:  "chat.completion",
+		Created: 1677652288,
+		Model:   "gpt-3.5-turbo",
+		Choices: []openai.ChatCompletionChoice{}, // Empty choices
+		Usage: openai.Usage{
+			PromptTokens:     10,
+			CompletionTokens: 0,
+			TotalTokens:      10,
+		},
+	}
+}
+
 func TestNewOpenAIRepository_Success(t *testing.T) {
 	// Create mock client
-	mockClient := &mocks.MockOpenAIClient{}
+	mockClient := &MockOpenAIClient{}
 
 	repo, err := NewOpenAIRepository(mockClient)
 
@@ -48,7 +99,7 @@ func TestNewOpenAIClientCreation(t *testing.T) {
 
 func TestOpenAIRepository_Structure(t *testing.T) {
 	// Create mock client
-	mockClient := &mocks.MockOpenAIClient{}
+	mockClient := &MockOpenAIClient{}
 
 	repo, err := NewOpenAIRepository(mockClient)
 	assert.NoError(t, err)
@@ -60,10 +111,10 @@ func TestOpenAIRepository_Structure(t *testing.T) {
 
 func TestOpenAIRepository_SendMessage_Success(t *testing.T) {
 	// Create mock OpenAI client
-	mockClient := &mocks.MockOpenAIClient{}
+	mockClient := &MockOpenAIClient{}
 
 	// Setup mock response
-	mockResponse := mocks.CreateMockOpenAIResponse("Hello! How can I assist you today?")
+	mockResponse := CreateMockOpenAIResponse("Hello! How can I assist you today?")
 	mockClient.On("CreateChatCompletion", mock.AnythingOfType("context.backgroundCtx"), mock.AnythingOfType("openai.ChatCompletionRequest")).Return(mockResponse, nil)
 
 	// Create repository with mock client
@@ -71,7 +122,7 @@ func TestOpenAIRepository_SendMessage_Success(t *testing.T) {
 
 	// Test the actual Send method with domain.PromptRequest
 	promptRequest := domain.PromptRequest{Prompt: "Hello world"}
-	response, err := repo.Send(promptRequest)
+	response, err := repo.Send(context.Background(), promptRequest)
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello! How can I assist you today?", response)
 
@@ -80,7 +131,7 @@ func TestOpenAIRepository_SendMessage_Success(t *testing.T) {
 
 func TestOpenAIRepository_SendMessage_APIError(t *testing.T) {
 	// Create mock OpenAI client that returns error
-	mockClient := &mocks.MockOpenAIClient{}
+	mockClient := &MockOpenAIClient{}
 
 	mockClient.On("CreateChatCompletion", mock.AnythingOfType("context.backgroundCtx"), mock.AnythingOfType("openai.ChatCompletionRequest")).Return(openai.ChatCompletionResponse{}, errors.New("API connection failed"))
 
@@ -88,7 +139,7 @@ func TestOpenAIRepository_SendMessage_APIError(t *testing.T) {
 	repo, _ := NewOpenAIRepository(mockClient)
 
 	promptRequest := domain.PromptRequest{Prompt: "Hello world"}
-	response, err := repo.Send(promptRequest)
+	response, err := repo.Send(context.Background(), promptRequest)
 	assert.Error(t, err)
 	assert.Empty(t, response)
 	assert.Contains(t, err.Error(), "error calling OpenAI API")
@@ -98,16 +149,16 @@ func TestOpenAIRepository_SendMessage_APIError(t *testing.T) {
 
 func TestOpenAIRepository_SendMessage_EmptyResponse(t *testing.T) {
 	// Create mock OpenAI client that returns empty choices
-	mockClient := &mocks.MockOpenAIClient{}
+	mockClient := &MockOpenAIClient{}
 
-	mockResponse := mocks.CreateEmptyOpenAIResponse()
+	mockResponse := CreateEmptyOpenAIResponse()
 	mockClient.On("CreateChatCompletion", mock.AnythingOfType("context.backgroundCtx"), mock.AnythingOfType("openai.ChatCompletionRequest")).Return(mockResponse, nil)
 
 	// Create repository with mock client
 	repo, _ := NewOpenAIRepository(mockClient)
 
 	promptRequest := domain.PromptRequest{Prompt: "Hello world"}
-	response, err := repo.Send(promptRequest)
+	response, err := repo.Send(context.Background(), promptRequest)
 	assert.Error(t, err)
 	assert.Empty(t, response)
 	assert.Contains(t, err.Error(), "no response from OpenAI API")
@@ -117,10 +168,10 @@ func TestOpenAIRepository_SendMessage_EmptyResponse(t *testing.T) {
 
 func TestOpenAIRepository_SendMessage_EmptyPrompt(t *testing.T) {
 	// Create mock OpenAI client
-	mockClient := &mocks.MockOpenAIClient{}
+	mockClient := &MockOpenAIClient{}
 
 	// Setup mock response for empty prompt
-	mockResponse := mocks.CreateMockOpenAIResponse("Please provide a prompt.")
+	mockResponse := CreateMockOpenAIResponse("Please provide a prompt.")
 	mockClient.On("CreateChatCompletion", mock.AnythingOfType("context.backgroundCtx"), mock.AnythingOfType("openai.ChatCompletionRequest")).Return(mockResponse, nil)
 
 	// Create repository with mock client
@@ -128,7 +179,7 @@ func TestOpenAIRepository_SendMessage_EmptyPrompt(t *testing.T) {
 
 	// Test with empty prompt
 	promptRequest := domain.PromptRequest{Prompt: ""}
-	response, err := repo.Send(promptRequest)
+	response, err := repo.Send(context.Background(), promptRequest)
 	assert.NoError(t, err)
 	assert.Equal(t, "Please provide a prompt.", response)
 
@@ -137,17 +188,17 @@ func TestOpenAIRepository_SendMessage_EmptyPrompt(t *testing.T) {
 
 func TestOpenAIRepository_SendMessage_LongPrompt(t *testing.T) {
 	// Create mock OpenAI client
-	mockClient := &mocks.MockOpenAIClient{}
+	mockClient := &MockOpenAIClient{}
 
 	longPrompt := strings.Repeat("This is a very long prompt. ", 100)
-	mockResponse := mocks.CreateMockOpenAIResponse("Response to long prompt")
+	mockResponse := CreateMockOpenAIResponse("Response to long prompt")
 	mockClient.On("CreateChatCompletion", mock.AnythingOfType("context.backgroundCtx"), mock.AnythingOfType("openai.ChatCompletionRequest")).Return(mockResponse, nil)
 
 	// Create repository with mock client
 	repo, _ := NewOpenAIRepository(mockClient)
 
 	promptRequest := domain.PromptRequest{Prompt: longPrompt}
-	response, err := repo.Send(promptRequest)
+	response, err := repo.Send(context.Background(), promptRequest)
 	assert.NoError(t, err)
 	assert.Equal(t, "Response to long prompt", response)
 

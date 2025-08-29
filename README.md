@@ -7,7 +7,7 @@ This project provides an API that integrates multiple large language models (LLM
 - Send prompts to OpenAI or Groq from a single endpoint.
 - Dynamically switch the model used without modifying client code.
 - Scale and extend to other LLMs in the future.
-- Event-driven integration with Kafka: Optional, send responses to a Kafka topic for further processing.
+- Event-driven integration with Gateway: Optional, send responses to a Gateway for further processing.
 
 Currently, it is integrated with OpenAI and Groq. Groq offers multiple free models with certain token limits; see
 documentation at: [Groq](https://console.groq.com/docs/overview)
@@ -17,7 +17,7 @@ documentation at: [Groq](https://console.groq.com/docs/overview)
 - Go 1.21 or higher
 - OpenAI API key (optional, for OpenAI integration)
 - Groq API key (optional, for Groq integration)
-- Kafka (optional, for Kafka integration)
+- Gateway
 
 ## 🚀 Installation
 
@@ -46,17 +46,15 @@ go run main.go
 
 Create a `.env` file based on `env.example`:
 
+- `PORT`: Server port (default: 8080)
+- `LOG_LEVEL`: Log level (debug, info, warn, error, fatal, panic - default: info)
 - `CHAT_MODEL`: Chat model to use. If "OpenAI" is selected, the OpenAI API is used; otherwise, Groq is used.
     - Example for Groq: llama-3.3-70b-versatile
     - Default: openai/gpt-oss-20b
 - `OPENAI_API_KEY`: OpenAI API key (required for OpenAI)
 - `GROQ_API_KEY`: Groq API key (required for Groq)
 - `GROQ_URL`: Groq API URL (default: https://api.groq.com/openai/v1/responses)
-- `PORT`: Server port (default: 8080)
-- `LOG_LEVEL`: Log level (debug, info, warn, error, fatal, panic - default: info)
-- `KAFKA_ENABLED`: Enable Kafka integration (true or false)
-- `KAFKA_BROKER`: Comma-separated list of Kafka brokers
-- `KAFKA_TOPIC`: Kafka topic to send events to
+- `GATEWAY_URL`: Gateway API URL (optional)
 
 ### OpenAI API Setup
 

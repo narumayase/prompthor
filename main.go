@@ -7,6 +7,7 @@ import (
 	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/client"
 	"anyompt/internal/infrastructure/repository"
+	anysherhttp "github.com/narumayase/anysher/http"
 	"github.com/rs/zerolog/log"
 	"net/http"
 )
@@ -16,41 +17,35 @@ func main() {
 	cfg := config.Load()
 
 	// Create repository based on configuration
-	chatRepo, eventRepo := initializeRepositories(cfg)
-	if eventRepo != nil {
-		defer eventRepo.Close()
-	}
+	chatRepository, producerRepository := initializeRepositories(cfg)
 
 	// Create use case
-	chatUseCase := application.NewChatUseCase(chatRepo, eventRepo)
+	chatUseCase := application.NewChatUseCase(chatRepository, producerRepository)
 
 	server.Run(cfg, chatUseCase)
 }
 
 // initializeRepositories creates and returns the appropriate chat repository based on configuration
 func initializeRepositories(config config.Config) (domain.LLMRepository, domain.ProducerRepository) {
-	var chatRepo domain.LLMRepository
+	var chatRepository domain.LLMRepository
 	if config.ChatModel == "OpenAI" && config.OpenAIKey != "" {
-		chatRepo = initializeOpenAIRepository(config)
+		chatRepository = initializeOpenAIRepository(config)
 	} else if config.GroqAPIKey != "" {
-		chatRepo = initializeGroqRepository(config)
+		chatRepository = initializeGroqRepository(config)
 	}
-
-	eventRepo, err := repository.NewKafkaRepository(config)
-	if err != nil {
-		log.Error().Err(err).Msgf("failed to create Kafka repository: %v", err)
-	}
-
-	return chatRepo, eventRepo
+	producerRepository := initializeProducerRepository(config)
+	return chatRepository, producerRepository
 }
 
 // initializeGroqRepository creates and configures a Groq repository instance
 func initializeGroqRepository(config config.Config) domain.LLMRepository {
-	groqClient := &http.Client{}
-	groqHttpClient := client.NewHttpClient(groqClient, config.GroqAPIKey)
+	cfg := anysherhttp.NewConfiguration(config.LogLevel)
+
+	// Create a new HTTP client
+	httpClient := anysherhttp.NewClient(&http.Client{}, cfg)
 
 	log.Info().Msg("🚀 Starting with Groq API")
-	chatRepo, err := repository.NewGroqRepository(config, groqHttpClient)
+	chatRepo, err := repository.NewGroqRepository(config, httpClient)
 	if err != nil {
 		log.Error().Err(err).Msgf("failed to create Groq repository: %v", err)
 		log.Fatal()
@@ -60,13 +55,23 @@ func initializeGroqRepository(config config.Config) domain.LLMRepository {
 
 // initializeOpenAIRepository creates and configures an OpenAI repository instance
 func initializeOpenAIRepository(config config.Config) domain.LLMRepository {
-	client := client.NewOpenAIClient(config.OpenAIKey)
+	openaiClient := client.NewOpenAIClient(config.OpenAIKey)
 
 	log.Info().Msg("🚀 Starting with OpenAI API")
-	chatRepo, err := repository.NewOpenAIRepository(client)
+	chatRepo, err := repository.NewOpenAIRepository(openaiClient)
 	if err != nil {
 		log.Error().Err(err).Msgf("failed to create OpenAI repository: %v", err)
 		log.Fatal()
 	}
 	return chatRepo
+}
+
+// initializeProducerRepository creates and configures a producer repository instance
+func initializeProducerRepository(config config.Config) domain.ProducerRepository {
+	cfg := anysherhttp.NewConfiguration(config.LogLevel)
+
+	// Create a new HTTP client
+	httpClient := anysherhttp.NewClient(&http.Client{}, cfg)
+
+	return repository.NewAnywayRepository(config, httpClient)
 }

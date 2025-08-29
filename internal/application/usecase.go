@@ -23,7 +23,7 @@ func NewChatUseCase(chatRepository domain.LLMRepository, producerRepository doma
 
 // ProcessChat processes the chat request
 func (uc *ChatUseCaseImpl) ProcessChat(ctx context.Context, prompt domain.PromptRequest) (*domain.ChatResponse, error) {
-	messageResponse, err := uc.chatRepository.Send(prompt)
+	messageResponse, err := uc.chatRepository.Send(ctx, prompt)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to send message")
 		return nil, err
@@ -32,7 +32,7 @@ func (uc *ChatUseCaseImpl) ProcessChat(ctx context.Context, prompt domain.Prompt
 		Response: messageResponse,
 	}
 	if err := uc.produceMessage(ctx, response); err != nil {
-		log.Error().Err(err).Msg("Failed to send message to queue")
+		log.Error().Err(err).Msg("Failed to produce message")
 		return nil, err
 	}
 	return &response, nil
@@ -49,5 +49,5 @@ func (uc *ChatUseCaseImpl) produceMessage(ctx context.Context, response domain.C
 		log.Error().Err(err).Msg("Failed to marshal message")
 		return err
 	}
-	return uc.producerRepository.Produce(ctx, message)
+	return uc.producerRepository.Send(ctx, message)
 }

@@ -15,8 +15,9 @@ func TestInitializeRepositories(t *testing.T) {
 		}
 		llmRepo, eventRepo := initializeRepositories(cfg)
 		assert.NotNil(t, llmRepo)
-		assert.Nil(t, eventRepo)
+		assert.NotNil(t, eventRepo)
 		assert.IsType(t, &repository.OpenAIRepository{}, llmRepo)
+		assert.IsType(t, &repository.AnywayRepository{}, eventRepo)
 	})
 
 	t.Run("should return Groq repository when configured", func(t *testing.T) {
@@ -25,8 +26,9 @@ func TestInitializeRepositories(t *testing.T) {
 		}
 		llmRepo, eventRepo := initializeRepositories(cfg)
 		assert.NotNil(t, llmRepo)
-		assert.Nil(t, eventRepo)
+		assert.NotNil(t, eventRepo)
 		assert.IsType(t, &repository.GroqRepository{}, llmRepo)
+		assert.IsType(t, &repository.AnywayRepository{}, eventRepo)
 	})
 }
 

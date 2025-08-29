@@ -9,6 +9,7 @@ require (
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-gonic/gin v1.10.1
 	github.com/joho/godotenv v1.5.1
+	github.com/narumayase/anysher v0.0.0-20250829035422-312a937ae07b
 	github.com/rs/zerolog v1.34.0
 	github.com/sashabaranov/go-openai v1.20.2
 	github.com/stretchr/testify v1.10.0

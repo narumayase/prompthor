@@ -21,9 +21,7 @@ func NewOpenAIRepository(client client.OpenAIClient) (domain.LLMRepository, erro
 }
 
 // Send sends a message to ChatGPT and returns the response
-func (r *OpenAIRepository) Send(prompt domain.PromptRequest) (string, error) {
-	ctx := context.Background()
-
+func (r *OpenAIRepository) Send(ctx context.Context, prompt domain.PromptRequest) (string, error) {
 	resp, err := r.client.CreateChatCompletion(
 		ctx,
 		openai.ChatCompletionRequest{
@@ -37,14 +35,11 @@ func (r *OpenAIRepository) Send(prompt domain.PromptRequest) (string, error) {
 		},
 	)
 	response := ""
-
 	if err != nil {
 		return response, fmt.Errorf("error calling OpenAI API: %w", err)
 	}
-
 	if len(resp.Choices) == 0 {
 		return response, fmt.Errorf("no response from OpenAI API")
 	}
-
 	return resp.Choices[0].Message.Content, nil
 }

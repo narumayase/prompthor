@@ -10,14 +10,15 @@ import (
 
 // Config contains the application configuration
 type Config struct {
-	Port         string
-	OpenAIKey    string
-	GroqAPIKey   string
-	GroqUrl      string
-	ChatModel    string
-	KafkaEnabled bool
-	KafkaBroker  string
-	KafkaTopic   string
+	LogLevel string
+	Port     string
+
+	OpenAIKey  string
+	GroqAPIKey string
+	GroqUrl    string
+	ChatModel  string
+
+	GatewayAPIUrl string
 }
 
 // Load loads configuration from environment variables or an .env file
@@ -29,14 +30,15 @@ func Load() Config {
 	}
 
 	return Config{
-		Port:         getEnv("PORT", "8080"),
-		OpenAIKey:    getEnv("OPENAI_API_KEY", ""),
-		GroqAPIKey:   getEnv("GROQ_API_KEY", ""),
-		GroqUrl:      getEnv("GROQ_URL", "https://api.groq.com/openai/v1/responses"),
-		ChatModel:    getEnv("CHAT_MODEL", "openai/gpt-oss-20b"),
-		KafkaEnabled: getEnvAsBool("KAFKA_ENABLED", false),
-		KafkaBroker:  getEnv("KAFKA_BROKER", "localhost:9092"),
-		KafkaTopic:   getEnv("KAFKA_TOPIC", "anyompt-topic"),
+		Port:     getEnv("PORT", "8080"),
+		LogLevel: getEnv("LOG_LEVEL", "info"),
+
+		OpenAIKey:  getEnv("OPENAI_API_KEY", ""),
+		GroqAPIKey: getEnv("GROQ_API_KEY", ""),
+		GroqUrl:    getEnv("GROQ_URL", "https://api.groq.com/openai/v1/responses"),
+		ChatModel:  getEnv("CHAT_MODEL", "openai/gpt-oss-20b"),
+
+		GatewayAPIUrl: getEnv("GATEWAY_API_URL", "http://anyway:9889"),
 	}
 }
 

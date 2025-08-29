@@ -144,6 +144,10 @@ github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lN
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/modern-go/reflect2 v1.0.2 h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9Gz0M=
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
+github.com/narumayase/anysher v0.0.0-20250829032510-d474a0627c8b h1:ddtYt4LPiYmpMluWl9KF/7oZyV5Xp7/NlTfVxPLu8C4=
+github.com/narumayase/anysher v0.0.0-20250829032510-d474a0627c8b/go.mod h1:c0d3iP9IChMXKniDqRkANXZ0+WkkbgOH0b3VUCvtyC4=
+github.com/narumayase/anysher v0.0.0-20250829035422-312a937ae07b h1:9flUbrJPlpAOvnah62xHgIC2hw/M8RN/S5KnpZim6t4=
+github.com/narumayase/anysher v0.0.0-20250829035422-312a937ae07b/go.mod h1:c0d3iP9IChMXKniDqRkANXZ0+WkkbgOH0b3VUCvtyC4=
 github.com/nrwiersma/avro-benchmarks v0.0.0-20210913175520-21aec48c8f76/go.mod h1:iKyFMidsk/sVYONJRE372sJuX/QTRPacU7imPqqsu7g=
 github.com/pelletier/go-toml/v2 v2.2.4 h1:mye9XuhQ6gvn5h28+VilKrrPoQVanw5PMw/TB0t5Ec4=
 github.com/pelletier/go-toml/v2 v2.2.4/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=

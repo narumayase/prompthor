@@ -132,15 +132,14 @@ This project follows Clean Architecture principles:
 anyompt/
 ├── cmd/                  # Application entry points
 │   └── server/           # Main server
+├── config/               # Configuration
 ├── internal/             # Project-specific code
-│   ├── config/           # Configuration
+│   ├── domain/           # Domain entities and interfaces
+│   ├── application/      # Use cases
 │   ├── infrastructure/   # Repository implementations
 │   └── interfaces/       # HTTP controllers
 │       ├── http/         # Handler controller
 │       └── middleware/   # Middlewares
-├── pkg/                  # Reusable and public code
-│   ├── domain/           # Domain entities and interfaces
-│   └── application/      # Use cases
 ├── main.go               # Main entry point
 ├── go.mod                # Go dependencies
 ├── README_ES.md          # README in spanish

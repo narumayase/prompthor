@@ -35,3 +35,5 @@ go.work.sum
 .cursor/
 *.cursor
 .cursor-*
+
+vendor/

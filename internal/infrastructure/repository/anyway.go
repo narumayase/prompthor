@@ -7,6 +7,11 @@ import (
 	anysherhttp "github.com/narumayase/anysher/http"
 )
 
+const (
+	correlationIdHeader = "X-Correlation-ID"
+	routingIdHeader     = "X-Routing-ID"
+)
+
 // AnywayRepository implements ProducerRepository using anyway API
 type AnywayRepository struct {
 	apiKey     string
@@ -25,17 +30,18 @@ func NewAnywayRepository(config config.Config, httpClient *anysherhttp.Client) d
 }
 
 func (r *AnywayRepository) Send(ctx context.Context, message []byte) error {
-	correlationID := ctx.Value("correlation_id").(string)
-	routingID := ctx.Value("routing_id").(string)
+	correlationID := ctx.Value(correlationIdHeader).(string)
+	routingID := ctx.Value(routingIdHeader).(string)
 
 	// send to anyway
 	resp, err := r.httpClient.Post(ctx, anysherhttp.Payload{
 		URL:   r.baseURL,
 		Token: r.apiKey,
 		Headers: map[string]string{
-			"Content-Type":     "application/json",
-			"X-Correlation-ID": correlationID,
-			"X-Routing-ID":     routingID},
+			"Content-Type":      "application/json",
+			correlationIdHeader: correlationID,
+			routingIdHeader:     routingID,
+		},
 		Content: message,
 	})
 	if err != nil {

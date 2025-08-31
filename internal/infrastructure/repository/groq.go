@@ -57,7 +57,7 @@ func (r *GroqRepository) Send(ctx context.Context, prompt domain.PromptRequest) 
 	}
 	body, err := json.Marshal(payload)
 	if err != nil {
-		log.Error().Err(err).Msg("failed to marshal payload")
+		log.Ctx(ctx).Error().Err(err).Msg("failed to marshal payload")
 		return "", err
 	}
 	// send to anyway
@@ -90,13 +90,13 @@ func (r *GroqRepository) Send(ctx context.Context, prompt domain.PromptRequest) 
 			for _, content := range entry.Content {
 				if content.Type == "output_text" {
 					outputPrompt = content.Text
-					log.Debug().Msgf("output prompt: %s", outputPrompt)
+					log.Ctx(ctx).Debug().Msgf("output prompt: %s", outputPrompt)
 				}
 			}
 		}
 	}
-	log.Info().Msgf("Groq API response status: %s", resp.Status)
-	log.Debug().Msgf("Groq API response: %s", string(respBody))
+	log.Ctx(ctx).Info().Msgf("Groq API response status: %s", resp.Status)
+	log.Ctx(ctx).Debug().Msgf("Groq API response: %s", string(respBody))
 
 	return outputPrompt, nil
 }

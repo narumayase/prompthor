@@ -25,14 +25,14 @@ func NewChatUseCase(chatRepository domain.LLMRepository, producerRepository doma
 func (uc *ChatUseCaseImpl) ProcessChat(ctx context.Context, prompt domain.PromptRequest) (*domain.ChatResponse, error) {
 	messageResponse, err := uc.chatRepository.Send(ctx, prompt)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to send message")
+		log.Ctx(ctx).Error().Err(err).Msg("Failed to send message")
 		return nil, err
 	}
 	response := domain.ChatResponse{
 		Response: messageResponse,
 	}
 	if err := uc.produceMessage(ctx, response); err != nil {
-		log.Error().Err(err).Msg("Failed to produce message")
+		log.Ctx(ctx).Error().Err(err).Msg("Failed to produce message")
 		return nil, err
 	}
 	return &response, nil
@@ -41,12 +41,12 @@ func (uc *ChatUseCaseImpl) ProcessChat(ctx context.Context, prompt domain.Prompt
 // produceMessage
 func (uc *ChatUseCaseImpl) produceMessage(ctx context.Context, response domain.ChatResponse) error {
 	if uc.producerRepository == nil {
-		log.Debug().Msg("No producer repository defined")
+		log.Ctx(ctx).Debug().Msg("No producer repository defined")
 		return nil
 	}
 	message, err := json.Marshal(response)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to marshal message")
+		log.Ctx(ctx).Error().Err(err).Msg("Failed to marshal message")
 		return err
 	}
 	return uc.producerRepository.Send(ctx, message)

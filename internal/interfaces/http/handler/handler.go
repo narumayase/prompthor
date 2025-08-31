@@ -2,7 +2,6 @@ package handler
 
 import (
 	"anyompt/internal/domain"
-	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"net/http"
@@ -24,22 +23,17 @@ func NewChatHandler(chatUseCase domain.ChatUseCase) *ChatHandler {
 func (h *ChatHandler) HandleChat(c *gin.Context) {
 	var request domain.PromptRequest
 
+	ctx := c.Request.Context()
 	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Ctx(ctx).Error().Err(err).Msg("invalid request")
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request format: " + err.Error(),
 		})
 		return
 	}
-	// TODO ver de hacer un middleware que inyecte los headers automáticamente?
-	ctx := context.WithValue(c.Request.Context(), "correlation_id", c.GetHeader("X-Correlation-ID"))
-	ctx = context.WithValue(ctx, "routing_id", c.GetHeader("X-Routing-ID"))
-	// TODO y otro middleware con el request id.. y el logging... ver
-
-	log.Info().Msgf("X-Correlation-ID received: %v", c.GetHeader("X-Correlation-ID"))
-	log.Info().Msgf("X-Routing-ID received: %v", c.GetHeader("X-Routing-ID"))
-
 	response, err := h.usecase.ProcessChat(ctx, request)
 	if err != nil {
+		log.Ctx(ctx).Error().Err(err).Msg("error process chat")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Error processing chat: " + err.Error(),
 		})

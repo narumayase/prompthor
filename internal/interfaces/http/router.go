@@ -3,9 +3,9 @@ package http
 import (
 	"anyompt/internal/domain"
 	"anyompt/internal/interfaces/http/handler"
-	"anyompt/internal/interfaces/http/middleware"
-
 	"github.com/gin-gonic/gin"
+	"github.com/narumayase/anysher/middleware"
+	"github.com/narumayase/anysher/middleware/gateway"
 )
 
 // SetupRouter configures the API routes
@@ -18,6 +18,7 @@ func SetupRouter(chatUseCase domain.ChatUseCase) *gin.Engine {
 	router.Use(middleware.ErrorHandler())
 	router.Use(middleware.RequestIDToLogger())
 	router.Use(middleware.HeadersToContext())
+	router.Use(gateway.Sender(gateway.New()))
 
 	// Create the controller
 	chatHandler := handler.NewChatHandler(chatUseCase)

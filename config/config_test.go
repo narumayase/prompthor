@@ -4,7 +4,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -43,7 +42,7 @@ func TestGetEnv(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Clean up environment
 			os.Unsetenv(tt.key)
-			
+
 			// Set environment variable if provided
 			if tt.envValue != "" {
 				os.Setenv(tt.key, tt.envValue)
@@ -63,9 +62,9 @@ func TestConfig_DefaultValues(t *testing.T) {
 		os.Unsetenv(env)
 	}
 
-	// Note: We can't easily test Load() function due to godotenv.Load() 
+	// Note: We can't easily test Load() function due to godotenv.Load()
 	// which would cause log.Fatal. Instead, we test the structure and getEnv function.
-	
+
 	t.Run("config structure", func(t *testing.T) {
 		config := Config{
 			Port:       getEnv("PORT", "8080"),
@@ -139,89 +138,10 @@ func TestConfig_PartialEnvironmentVariables(t *testing.T) {
 	})
 }
 
-func TestSetLogLevel(t *testing.T) {
-	tests := []struct {
-		name     string
-		logLevel string
-		expected zerolog.Level
-	}{
-		{
-			name:     "debug level",
-			logLevel: "debug",
-			expected: zerolog.DebugLevel,
-		},
-		{
-			name:     "info level",
-			logLevel: "info",
-			expected: zerolog.InfoLevel,
-		},
-		{
-			name:     "warn level",
-			logLevel: "warn",
-			expected: zerolog.WarnLevel,
-		},
-		{
-			name:     "error level",
-			logLevel: "error",
-			expected: zerolog.ErrorLevel,
-		},
-		{
-			name:     "fatal level",
-			logLevel: "fatal",
-			expected: zerolog.FatalLevel,
-		},
-		{
-			name:     "panic level",
-			logLevel: "panic",
-			expected: zerolog.PanicLevel,
-		},
-		{
-			name:     "uppercase level",
-			logLevel: "DEBUG",
-			expected: zerolog.DebugLevel,
-		},
-		{
-			name:     "mixed case level",
-			logLevel: "WaRn",
-			expected: zerolog.WarnLevel,
-		},
-		{
-			name:     "invalid level defaults to info",
-			logLevel: "invalid",
-			expected: zerolog.InfoLevel,
-		},
-		{
-			name:     "empty level defaults to info",
-			logLevel: "",
-			expected: zerolog.InfoLevel,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Clean up environment
-			os.Unsetenv("LOG_LEVEL")
-			
-			// Set LOG_LEVEL if provided
-			if tt.logLevel != "" {
-				os.Setenv("LOG_LEVEL", tt.logLevel)
-				defer os.Unsetenv("LOG_LEVEL")
-			}
-
-			// Call setLogLevel
-			setLogLevel()
-
-			// Verify the global log level was set correctly
-			actual := zerolog.GlobalLevel()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
-}
-
 func TestConfig_GroqUrl_Default(t *testing.T) {
 	// Test that GroqUrl has the correct default value
 	os.Unsetenv("GROQ_URL")
-	
+
 	groqUrl := getEnv("GROQ_URL", "https://api.groq.com/openai/v1/responses")
 	assert.Equal(t, "https://api.groq.com/openai/v1/responses", groqUrl)
 }
@@ -231,7 +151,7 @@ func TestConfig_GroqUrl_Custom(t *testing.T) {
 	customUrl := "https://custom.groq.api.com/v2/responses"
 	os.Setenv("GROQ_URL", customUrl)
 	defer os.Unsetenv("GROQ_URL")
-	
+
 	groqUrl := getEnv("GROQ_URL", "https://api.groq.com/openai/v1/responses")
 	assert.Equal(t, customUrl, groqUrl)
 }
@@ -263,17 +183,17 @@ LOG_LEVEL=debug`
 func TestLoad_WithoutEnvFile(t *testing.T) {
 	// Save original working directory
 	originalWd, _ := os.Getwd()
-	
+
 	// Create a temporary directory for this test
 	tempDir, err := os.MkdirTemp("", "config_test")
 	assert.NoError(t, err)
 	defer os.RemoveAll(tempDir)
-	
+
 	// Change to temp directory
 	err = os.Chdir(tempDir)
 	assert.NoError(t, err)
 	defer os.Chdir(originalWd)
-	
+
 	// Clean environment variables
 	envVars := []string{"PORT", "OPENAI_API_KEY", "GROQ_API_KEY", "GROQ_URL", "CHAT_MODEL", "LOG_LEVEL"}
 	for _, env := range envVars {

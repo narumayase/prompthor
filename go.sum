@@ -64,6 +64,10 @@ github.com/narumayase/anysher v0.0.0-20250830005355-bfb607e3092c h1:o7AwL5CQaI9E
 github.com/narumayase/anysher v0.0.0-20250830005355-bfb607e3092c/go.mod h1:c0d3iP9IChMXKniDqRkANXZ0+WkkbgOH0b3VUCvtyC4=
 github.com/narumayase/anysher v0.0.0-20250831205410-0c9577f33f36 h1:EY7bCoYHs3t3VVVAW8D5CWDqFVdyEvuRWV54VvfeBt0=
 github.com/narumayase/anysher v0.0.0-20250831205410-0c9577f33f36/go.mod h1:c0d3iP9IChMXKniDqRkANXZ0+WkkbgOH0b3VUCvtyC4=
+github.com/narumayase/anysher v0.0.0-20250831220129-1cf9111573b1 h1:k4+ub9gA7VHM43/nVKYH4t8gzreLeHsCl4welQM0XnE=
+github.com/narumayase/anysher v0.0.0-20250831220129-1cf9111573b1/go.mod h1:urN3oFdVkwt+vSh1Xxi9X4j1+VwHIHLvpKR1wtytP48=
+github.com/narumayase/anysher v0.0.0-20250831223005-ad40affc79f1 h1:qgZFZjSoxDtoszlQHzR/Jb5A2dL/z0Q7p+3lkJSdI+M=
+github.com/narumayase/anysher v0.0.0-20250831223005-ad40affc79f1/go.mod h1:qOQKd6cSPR2n54l8XXxEe4JWvAuU1JhkdQJ8SJ/RnVo=
 github.com/pelletier/go-toml/v2 v2.2.4 h1:mye9XuhQ6gvn5h28+VilKrrPoQVanw5PMw/TB0t5Ec4=
 github.com/pelletier/go-toml/v2 v2.2.4/go.mod h1:2gIqNv+qfxSVS7cM2xJQKtLSTLUE9V8t9Stt+h56mCY=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

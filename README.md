@@ -17,7 +17,7 @@ documentation at: [Groq](https://console.groq.com/docs/overview)
 - Go 1.21 or higher
 - OpenAI API key (optional, for OpenAI integration)
 - Groq API key (optional, for Groq integration)
-- Gateway
+- Gateway (optional, for responses sending)
 
 ## 🚀 Installation
 
@@ -139,8 +139,7 @@ anyompt/
 │   ├── application/      # Use cases
 │   ├── infrastructure/   # Repository implementations
 │   └── interfaces/       # HTTP controllers
-│       ├── http/         # Handler controller
-│       └── middleware/   # Middlewares
+│       └── http/         # Handler controller
 ├── main.go               # Main entry point
 ├── go.mod                # Go dependencies
 ├── README_ES.md          # README in spanish
@@ -188,4 +187,4 @@ go test -bench=. ./...
 - [ ] Add others paid LLMs
 - [ ] Integration tests
 - [ ] API documentation with Swagger
-- [ ] Add request_id in header and its middleware
+- [x] Add request_id in header and its middleware

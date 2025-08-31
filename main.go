@@ -7,6 +7,7 @@ import (
 	"anyompt/internal/domain"
 	"anyompt/internal/infrastructure/client"
 	"anyompt/internal/infrastructure/repository"
+	"fmt"
 	anysherhttp "github.com/narumayase/anysher/http"
 	"github.com/rs/zerolog/log"
 	"net/http"
@@ -17,24 +18,28 @@ func main() {
 	cfg := config.Load()
 
 	// Create repository based on configuration
-	chatRepository, producerRepository := initializeRepositories(cfg)
+	chatRepository := initializeRepositories(cfg)
 
 	// Create use case
-	chatUseCase := application.NewChatUseCase(chatRepository, producerRepository)
+	chatUseCase := application.NewChatUseCase(chatRepository)
 
 	server.Run(cfg, chatUseCase)
 }
 
 // initializeRepositories creates and returns the appropriate chat repository based on configuration
-func initializeRepositories(config config.Config) (domain.LLMRepository, domain.ProducerRepository) {
+func initializeRepositories(config config.Config) domain.LLMRepository {
 	var chatRepository domain.LLMRepository
-	if config.ChatModel == "OpenAI" && config.OpenAIKey != "" {
+	switch {
+	case config.ChatModel == "OpenAI" && config.OpenAIKey != "":
+		// initialize OpenAI repository
 		chatRepository = initializeOpenAIRepository(config)
-	} else if config.GroqAPIKey != "" {
+	case config.GroqAPIKey != "":
+		// initialize Groq repository
 		chatRepository = initializeGroqRepository(config)
+	default:
+		log.Panic().Err(fmt.Errorf("no valid LLM repository configuration found"))
 	}
-	producerRepository := initializeProducerRepository(config)
-	return chatRepository, producerRepository
+	return chatRepository
 }
 
 // initializeGroqRepository creates and configures a Groq repository instance
@@ -64,18 +69,4 @@ func initializeOpenAIRepository(config config.Config) domain.LLMRepository {
 		log.Fatal()
 	}
 	return chatRepo
-}
-
-// initializeProducerRepository creates and configures a producer repository instance
-func initializeProducerRepository(config config.Config) domain.ProducerRepository {
-	if config.GatewayEnabled {
-		cfg := anysherhttp.NewConfiguration(config.LogLevel)
-
-		// Create a new HTTP client
-		httpClient := anysherhttp.NewClient(&http.Client{}, cfg)
-
-		return repository.NewAnywayRepository(config, httpClient)
-
-	}
-	return nil
 }

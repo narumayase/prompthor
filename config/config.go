@@ -18,7 +18,8 @@ type Config struct {
 	GroqUrl    string
 	ChatModel  string
 
-	GatewayAPIUrl string
+	GatewayAPIUrl  string
+	GatewayEnabled bool
 }
 
 // Load loads configuration from environment variables or an .env file
@@ -38,7 +39,8 @@ func Load() Config {
 		GroqUrl:    getEnv("GROQ_URL", "https://api.groq.com/openai/v1/responses"),
 		ChatModel:  getEnv("CHAT_MODEL", "openai/gpt-oss-20b"),
 
-		GatewayAPIUrl: getEnv("GATEWAY_API_URL", "http://anyway:9889"),
+		GatewayAPIUrl:  getEnv("GATEWAY_API_URL", "http://anyway:9889"),
+		GatewayEnabled: getEnvAsBool("GATEWAY_ENABLED", true),
 	}
 }
 

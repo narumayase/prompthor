@@ -68,10 +68,14 @@ func initializeOpenAIRepository(config config.Config) domain.LLMRepository {
 
 // initializeProducerRepository creates and configures a producer repository instance
 func initializeProducerRepository(config config.Config) domain.ProducerRepository {
-	cfg := anysherhttp.NewConfiguration(config.LogLevel)
+	if config.GatewayEnabled {
+		cfg := anysherhttp.NewConfiguration(config.LogLevel)
 
-	// Create a new HTTP client
-	httpClient := anysherhttp.NewClient(&http.Client{}, cfg)
+		// Create a new HTTP client
+		httpClient := anysherhttp.NewClient(&http.Client{}, cfg)
 
-	return repository.NewAnywayRepository(config, httpClient)
+		return repository.NewAnywayRepository(config, httpClient)
+
+	}
+	return nil
 }

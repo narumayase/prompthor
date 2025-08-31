@@ -51,7 +51,7 @@ func TestChatHandler_HandleChat_Success(t *testing.T) {
 		Response: "I'm doing well, thank you!",
 	}
 
-	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return(expectedResponse, nil)
+	mockUseCase.On("ProcessChat", context.Background(), request).Return(expectedResponse, nil)
 
 	// Create request body
 	requestBody, _ := json.Marshal(request)
@@ -88,7 +88,7 @@ func TestChatHandler_HandleChat_UseCaseError(t *testing.T) {
 	}
 	expectedError := errors.New("API connection failed")
 
-	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return((*domain.ChatResponse)(nil), expectedError)
+	mockUseCase.On("ProcessChat", context.Background(), request).Return((*domain.ChatResponse)(nil), expectedError)
 
 	requestBody, _ := json.Marshal(request)
 	req, _ := http.NewRequest("POST", "/chat", bytes.NewBuffer(requestBody))
@@ -143,7 +143,7 @@ func TestChatHandler_HandleChat_MissingContentType(t *testing.T) {
 	expectedResponse := &domain.ChatResponse{
 		Response: "Response to test prompt",
 	}
-	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return(expectedResponse, nil)
+	mockUseCase.On("ProcessChat", context.Background(), request).Return(expectedResponse, nil)
 
 	// Send request without proper JSON content type
 	requestBody, _ := json.Marshal(request)
@@ -185,7 +185,7 @@ func TestChatHandler_HandleChat_LongPrompt(t *testing.T) {
 		Response: "Response to long prompt",
 	}
 
-	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return(expectedResponse, nil)
+	mockUseCase.On("ProcessChat", context.Background(), request).Return(expectedResponse, nil)
 
 	requestBody, _ := json.Marshal(request)
 	req, _ := http.NewRequest("POST", "/chat", bytes.NewBuffer(requestBody))
@@ -219,7 +219,7 @@ func TestChatHandler_HandleChat_WithHeaders(t *testing.T) {
 		Response: "Response with headers",
 	}
 
-	mockUseCase.On("ProcessChat", mock.AnythingOfType("*context.valueCtx"), request).Return(expectedResponse, nil)
+	mockUseCase.On("ProcessChat", context.Background(), request).Return(expectedResponse, nil)
 
 	requestBody, _ := json.Marshal(request)
 	req, _ := http.NewRequest("POST", "/chat", bytes.NewBuffer(requestBody))

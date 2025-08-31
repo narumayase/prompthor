@@ -44,7 +44,7 @@ func initializeRepositories(config config.Config) domain.LLMRepository {
 
 // initializeGroqRepository creates and configures a Groq repository instance
 func initializeGroqRepository(config config.Config) domain.LLMRepository {
-	cfg := anysherhttp.NewConfiguration(config.LogLevel)
+	cfg := anysherhttp.NewConfiguration()
 
 	// Create a new HTTP client
 	httpClient := anysherhttp.NewClient(&http.Client{}, cfg)

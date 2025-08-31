@@ -35,8 +35,7 @@ func (m *MockProducerRepository) Send(ctx context.Context, message []byte) error
 
 func TestNewChatUseCase(t *testing.T) {
 	mockChatRepo := &MockLLMRepository{}
-	mockProducerRepo := &MockProducerRepository{}
-	useCase := NewChatUseCase(mockChatRepo, mockProducerRepo)
+	useCase := NewChatUseCase(mockChatRepo)
 
 	assert.NotNil(t, useCase)
 	assert.IsType(t, &ChatUseCaseImpl{}, useCase)
@@ -44,18 +43,14 @@ func TestNewChatUseCase(t *testing.T) {
 
 func TestChatUseCaseImpl_ProcessChat_Success(t *testing.T) {
 	mockChatRepo := &MockLLMRepository{}
-	mockProducerRepo := &MockProducerRepository{}
 	useCase := &ChatUseCaseImpl{
-		chatRepository:     mockChatRepo,
-		producerRepository: mockProducerRepo,
+		chatRepository: mockChatRepo,
 	}
 
 	promptRequest := domain.PromptRequest{Prompt: "Hello, how are you?"}
 	expectedResponse := "I'm doing well, thank you!"
 
 	mockChatRepo.On("Send", promptRequest).Return(expectedResponse, nil)
-	// Fix: Use mock.Anything for context instead of specific type
-	mockProducerRepo.On("Send", mock.Anything, mock.Anything).Return(nil)
 
 	result, err := useCase.ProcessChat(context.Background(), promptRequest)
 
@@ -63,15 +58,12 @@ func TestChatUseCaseImpl_ProcessChat_Success(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, expectedResponse, result.Response)
 	mockChatRepo.AssertExpectations(t)
-	mockProducerRepo.AssertExpectations(t)
 }
 
 func TestChatUseCaseImpl_ProcessChat_Error(t *testing.T) {
 	mockChatRepo := &MockLLMRepository{}
-	mockProducerRepo := &MockProducerRepository{}
 	useCase := &ChatUseCaseImpl{
-		chatRepository:     mockChatRepo,
-		producerRepository: mockProducerRepo,
+		chatRepository: mockChatRepo,
 	}
 
 	promptRequest := domain.PromptRequest{Prompt: "Hello, how are you?"}
@@ -89,17 +81,14 @@ func TestChatUseCaseImpl_ProcessChat_Error(t *testing.T) {
 
 func TestChatUseCaseImpl_ProcessChat_EmptyPrompt(t *testing.T) {
 	mockChatRepo := &MockLLMRepository{}
-	mockProducerRepo := &MockProducerRepository{}
 	useCase := &ChatUseCaseImpl{
-		chatRepository:     mockChatRepo,
-		producerRepository: mockProducerRepo,
+		chatRepository: mockChatRepo,
 	}
 
 	promptRequest := domain.PromptRequest{Prompt: ""}
 	expectedResponse := "Please provide a valid prompt"
 
 	mockChatRepo.On("Send", promptRequest).Return(expectedResponse, nil)
-	mockProducerRepo.On("Send", mock.Anything, mock.Anything).Return(nil)
 
 	result, err := useCase.ProcessChat(context.Background(), promptRequest)
 
@@ -107,15 +96,12 @@ func TestChatUseCaseImpl_ProcessChat_EmptyPrompt(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, expectedResponse, result.Response)
 	mockChatRepo.AssertExpectations(t)
-	mockProducerRepo.AssertExpectations(t)
 }
 
 func TestChatUseCaseImpl_ProcessChat_LongPrompt(t *testing.T) {
 	mockChatRepo := &MockLLMRepository{}
-	mockProducerRepo := &MockProducerRepository{}
 	useCase := &ChatUseCaseImpl{
-		chatRepository:     mockChatRepo,
-		producerRepository: mockProducerRepo,
+		chatRepository: mockChatRepo,
 	}
 
 	// Create a long prompt
@@ -127,7 +113,6 @@ func TestChatUseCaseImpl_ProcessChat_LongPrompt(t *testing.T) {
 	expectedResponse := "Response to long prompt"
 
 	mockChatRepo.On("Send", promptRequest).Return(expectedResponse, nil)
-	mockProducerRepo.On("Send", mock.Anything, mock.Anything).Return(nil)
 
 	result, err := useCase.ProcessChat(context.Background(), promptRequest)
 
@@ -135,41 +120,16 @@ func TestChatUseCaseImpl_ProcessChat_LongPrompt(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, expectedResponse, result.Response)
 	mockChatRepo.AssertExpectations(t)
-	mockProducerRepo.AssertExpectations(t)
 }
 
 func TestChatUseCaseImpl_ProcessChat_SpecialCharacters(t *testing.T) {
 	mockChatRepo := &MockLLMRepository{}
-	mockProducerRepo := &MockProducerRepository{}
 	useCase := &ChatUseCaseImpl{
-		chatRepository:     mockChatRepo,
-		producerRepository: mockProducerRepo,
+		chatRepository: mockChatRepo,
 	}
 
 	promptRequest := domain.PromptRequest{Prompt: "Hello! @#$%^&*()_+ Ã¤Â½ Ã¥Â¥Â½ Ã°Å¸Å¡â‚¬"}
 	expectedResponse := "Response with special characters handled"
-
-	mockChatRepo.On("Send", promptRequest).Return(expectedResponse, nil)
-	mockProducerRepo.On("Send", mock.Anything, mock.Anything).Return(nil)
-
-	result, err := useCase.ProcessChat(context.Background(), promptRequest)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, result)
-	assert.Equal(t, expectedResponse, result.Response)
-	mockChatRepo.AssertExpectations(t)
-	mockProducerRepo.AssertExpectations(t)
-}
-
-func TestChatUseCaseImpl_ProcessChat_WithNilProducer(t *testing.T) {
-	mockChatRepo := &MockLLMRepository{}
-	useCase := &ChatUseCaseImpl{
-		chatRepository:     mockChatRepo,
-		producerRepository: nil, // nil producer
-	}
-
-	promptRequest := domain.PromptRequest{Prompt: "Test with nil producer"}
-	expectedResponse := "Test response"
 
 	mockChatRepo.On("Send", promptRequest).Return(expectedResponse, nil)
 

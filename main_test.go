@@ -10,27 +10,21 @@ import (
 func TestInitializeRepositories(t *testing.T) {
 	t.Run("should return OpenAI repository when configured", func(t *testing.T) {
 		cfg := config.Config{
-			OpenAIKey:      "test-key",
-			ChatModel:      "OpenAI",
-			GatewayEnabled: true,
+			OpenAIKey: "test-key",
+			ChatModel: "OpenAI",
 		}
-		llmRepo, eventRepo := initializeRepositories(cfg)
+		llmRepo := initializeRepositories(cfg)
 		assert.NotNil(t, llmRepo)
-		assert.NotNil(t, eventRepo)
 		assert.IsType(t, &repository.OpenAIRepository{}, llmRepo)
-		assert.IsType(t, &repository.AnywayRepository{}, eventRepo)
 	})
 
 	t.Run("should return Groq repository when configured", func(t *testing.T) {
 		cfg := config.Config{
-			GroqAPIKey:     "test-key",
-			GatewayEnabled: true,
+			GroqAPIKey: "test-key",
 		}
-		llmRepo, eventRepo := initializeRepositories(cfg)
+		llmRepo := initializeRepositories(cfg)
 		assert.NotNil(t, llmRepo)
-		assert.NotNil(t, eventRepo)
 		assert.IsType(t, &repository.GroqRepository{}, llmRepo)
-		assert.IsType(t, &repository.AnywayRepository{}, eventRepo)
 	})
 }
 

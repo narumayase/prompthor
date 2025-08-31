@@ -18,7 +18,7 @@ func SetupRouter(chatUseCase domain.ChatUseCase) *gin.Engine {
 	router.Use(middleware.ErrorHandler())
 	router.Use(middleware.RequestIDToLogger())
 	router.Use(middleware.HeadersToContext())
-	router.Use(gateway.Sender(gateway.New()))
+	router.Use(gateway.Sender())
 
 	// Create the controller
 	chatHandler := handler.NewChatHandler(chatUseCase)

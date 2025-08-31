@@ -40,7 +40,7 @@ func Load() Config {
 		ChatModel:  getEnv("CHAT_MODEL", "openai/gpt-oss-20b"),
 
 		GatewayAPIUrl:  getEnv("GATEWAY_API_URL", "http://anyway:9889"),
-		GatewayEnabled: getEnvAsBool("GATEWAY_ENABLED", true),
+		GatewayEnabled: getEnvAsBool("GATEWAY_ENABLED", false),
 	}
 }
 

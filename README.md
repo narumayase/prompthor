@@ -55,6 +55,7 @@ Create a `.env` file based on `env.example`:
 - `GROQ_API_KEY`: Groq API key (required for Groq)
 - `GROQ_URL`: Groq API URL (default: https://api.groq.com/openai/v1/responses)
 - `GATEWAY_URL`: Gateway API URL (optional)
+- `GATEWAY_ENABLED`: Defines if the response will be sent to the gateway (default:false)
 
 ### OpenAI API Setup
 

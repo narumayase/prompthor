@@ -56,6 +56,7 @@ Crear un archivo `.env` basado en `env.example`:
 - `KAFKA_ENABLED`: Habilita la integración con Kafka (true o false)
 - `KAFKA_BROKER`: Lista de brokers de Kafka separados por comas
 - `KAFKA_TOPIC`: Tópico de Kafka para enviar eventos
+- `GATEWAY_ENABLED`: Define si la respuesta será enviada al gateway (default:false)
 
 ### Configuración de OpenAI API
 

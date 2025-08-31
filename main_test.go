@@ -10,8 +10,9 @@ import (
 func TestInitializeRepositories(t *testing.T) {
 	t.Run("should return OpenAI repository when configured", func(t *testing.T) {
 		cfg := config.Config{
-			ChatModel: "OpenAI",
-			OpenAIKey: "test-key",
+			OpenAIKey:      "test-key",
+			ChatModel:      "OpenAI",
+			GatewayEnabled: true,
 		}
 		llmRepo, eventRepo := initializeRepositories(cfg)
 		assert.NotNil(t, llmRepo)
@@ -22,7 +23,8 @@ func TestInitializeRepositories(t *testing.T) {
 
 	t.Run("should return Groq repository when configured", func(t *testing.T) {
 		cfg := config.Config{
-			GroqAPIKey: "test-key",
+			GroqAPIKey:     "test-key",
+			GatewayEnabled: true,
 		}
 		llmRepo, eventRepo := initializeRepositories(cfg)
 		assert.NotNil(t, llmRepo)

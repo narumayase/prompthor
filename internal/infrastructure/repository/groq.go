@@ -8,7 +8,13 @@ import (
 	anysherhttp "github.com/narumayase/anysher/http"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
+	"net/http"
 )
+
+// HTTPClient is an interface for an HTTP client.
+type HTTPClient interface {
+	Post(ctx context.Context, payload anysherhttp.Payload) (*http.Response, error)
+}
 
 // GroqResponse is the response from the Groq API
 type GroqResponse struct {
@@ -35,12 +41,12 @@ type Content struct {
 type GroqRepository struct {
 	apiKey     string
 	model      string
-	httpClient *anysherhttp.Client
+	httpClient HTTPClient
 	baseURL    string
 }
 
 // NewGroqRepository creates a new instance of the Groq repository
-func NewGroqRepository(config config.Config, httpClient *anysherhttp.Client) (domain.LLMRepository, error) {
+func NewGroqRepository(config config.Config, httpClient HTTPClient) (domain.LLMRepository, error) {
 	return &GroqRepository{
 		apiKey:     config.GroqAPIKey,
 		model:      config.ChatModel,
@@ -66,14 +72,15 @@ func (r *GroqRepository) Send(ctx context.Context, prompt domain.PromptRequest) 
 		Token: r.apiKey,
 		Headers: map[string]string{
 			"Content-Type": "application/json",
+			"X-Request-Id": ctx.Value("X-Request-Id").(string),
 		},
 		Content: body,
 	})
-	defer resp.Body.Close()
 
 	if err != nil {
 		return "", err
 	}
+	defer resp.Body.Close()
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err

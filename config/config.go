@@ -2,17 +2,14 @@ package config
 
 import (
 	"github.com/joho/godotenv"
-	anysherLog "github.com/narumayase/anysher/log"
+	anysherlog "github.com/narumayase/anysher/log"
 	"github.com/rs/zerolog/log"
 	"os"
-	"strings"
 )
 
 // Config contains the application configuration
 type Config struct {
-	LogLevel string
-	Port     string
-
+	Port       string
 	OpenAIKey  string
 	GroqAPIKey string
 	GroqUrl    string
@@ -26,15 +23,13 @@ func Load() Config {
 		log.Printf("No .env file found or error loading .env file: %v", err)
 	}
 	config := Config{
-		Port:     getEnv("PORT", "8080"),
-		LogLevel: getEnv("LOG_LEVEL", "info"),
-
+		Port:       getEnv("PORT", "8080"),
 		OpenAIKey:  getEnv("OPENAI_API_KEY", ""),
 		GroqAPIKey: getEnv("GROQ_API_KEY", ""),
 		GroqUrl:    getEnv("GROQ_URL", "https://api.groq.com/openai/v1/responses"),
 		ChatModel:  getEnv("CHAT_MODEL", "openai/gpt-oss-20b"),
 	}
-	anysherLog.SetLogLevel()
+	anysherlog.SetLogLevel()
 
 	return config
 }
@@ -43,14 +38,6 @@ func Load() Config {
 func getEnv(key, defaultValue string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
-	}
-	return defaultValue
-}
-
-// getEnvAsBool gets an environment variable as a boolean or returns a default value
-func getEnvAsBool(key string, defaultValue bool) bool {
-	if value := os.Getenv(key); value != "" {
-		return strings.ToLower(value) == "true"
 	}
 	return defaultValue
 }

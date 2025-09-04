@@ -5,6 +5,7 @@ import (
 	"anyompt/internal/domain"
 	"context"
 	"encoding/json"
+	"fmt"
 	anysherhttp "github.com/narumayase/anysher/http"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
@@ -14,6 +15,16 @@ import (
 // HTTPClient is an interface for an HTTP client.
 type HTTPClient interface {
 	Post(ctx context.Context, payload anysherhttp.Payload) (*http.Response, error)
+}
+
+type GroqResponseError struct {
+	Error GroqError `json:"error"`
+}
+
+type GroqError struct {
+	Message string `json:"message"`
+	Type    string `json:"type"`
+	Code    string `json:"code"`
 }
 
 // GroqResponse is the response from the Groq API
@@ -76,15 +87,27 @@ func (r *GroqRepository) Send(ctx context.Context, prompt domain.PromptRequest) 
 		},
 		Content: body,
 	})
-
 	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
+
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
+	log.Ctx(ctx).Info().Msgf("Groq API response status: %s", resp.Status)
+
+	if resp.StatusCode != http.StatusOK {
+		var result GroqResponseError
+		if err := json.Unmarshal(respBody, &result); err != nil {
+			return "", err
+		}
+		err := fmt.Errorf(result.Error.Message)
+		log.Ctx(ctx).Debug().Msgf("Groq API response: %s", string(respBody))
+		return "", err
+	}
+
 	// Parse JSON to struct
 	var result GroqResponse
 	if err := json.Unmarshal(respBody, &result); err != nil {
@@ -102,7 +125,6 @@ func (r *GroqRepository) Send(ctx context.Context, prompt domain.PromptRequest) 
 			}
 		}
 	}
-	log.Ctx(ctx).Info().Msgf("Groq API response status: %s", resp.Status)
 	log.Ctx(ctx).Debug().Msgf("Groq API response: %s", string(respBody))
 
 	return outputPrompt, nil

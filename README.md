@@ -56,6 +56,7 @@ Create a `.env` file based on `env.example`:
 - `GROQ_URL`: Groq API URL (default: https://api.groq.com/openai/v1/responses)
 - `GATEWAY_URL`: Gateway API URL (optional)
 - `GATEWAY_ENABLED`: Defines if the response will be sent to the gateway (default:false)
+- `GATEWAY_IGNORE_ENDPOINTS`: Endpoints separated by pipe to ignore when sending response to `gateway`. eg: `GET:health|POST:send`.
 
 ### OpenAI API Setup
 

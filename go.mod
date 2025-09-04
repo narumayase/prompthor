@@ -7,7 +7,7 @@ toolchain go1.24.6
 require (
 	github.com/gin-gonic/gin v1.10.1
 	github.com/joho/godotenv v1.5.1
-	github.com/narumayase/anysher v0.0.0-20250904214512-05c01ae3d769
+	github.com/narumayase/anysher v0.0.0-20250904231453-08357230373e
 	github.com/rs/zerolog v1.34.0
 	github.com/sashabaranov/go-openai v1.20.2
 	github.com/stretchr/testify v1.10.0

@@ -44,10 +44,8 @@ func initializeRepositories(config config.Config) domain.LLMRepository {
 
 // initializeGroqRepository creates and configures a Groq repository instance
 func initializeGroqRepository(config config.Config) domain.LLMRepository {
-	cfg := anysherhttp.NewConfiguration()
-
 	// Create a new HTTP client
-	httpClient := anysherhttp.NewClient(&http.Client{}, cfg)
+	httpClient := anysherhttp.NewClient(&http.Client{})
 
 	log.Info().Msg("🚀 Starting with Groq API")
 	chatRepo, err := repository.NewGroqRepository(config, httpClient)

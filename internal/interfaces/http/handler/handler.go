@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"anyompt/internal/domain"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"net/http"
+	"prompthor/internal/domain"
 )
 
 // ChatHandler handles HTTP requests related to chat

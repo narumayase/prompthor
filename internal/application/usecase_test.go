@@ -1,9 +1,9 @@
 package application
 
 import (
-	"anyompt/internal/domain"
 	"context"
 	"errors"
+	"prompthor/internal/domain"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

@@ -1,13 +1,13 @@
 package handler
 
 import (
-	"anyompt/internal/domain"
 	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"prompthor/internal/domain"
 	"testing"
 
 	"github.com/gin-gonic/gin"

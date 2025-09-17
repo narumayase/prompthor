@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"anyompt/internal/domain"
-	"anyompt/internal/infrastructure/client"
 	"context"
 	"errors"
 	"os"
+	"prompthor/internal/domain"
+	"prompthor/internal/infrastructure/client"
 	"strings"
 	"testing"
 

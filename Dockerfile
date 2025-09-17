@@ -15,13 +15,13 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -o anyompt .
+RUN go build -o prompthor .
 
 # Etapa 2: imagen final
 FROM debian:bullseye-slim
 
 WORKDIR /app
-COPY --from=builder /app/anyompt .
+COPY --from=builder /app/prompthor .
 
 # Librerías runtime + certificados raíz
 RUN apt-get update && apt-get install -y \
@@ -31,4 +31,4 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 8100
-CMD ["./anyompt"]
+CMD ["./prompthor"]

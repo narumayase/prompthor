@@ -1,4 +1,4 @@
-# anyompt - LLMs integration API
+# prompthor - LLMs integration API
 
 This project provides an API that integrates multiple large language models (LLM).
 
@@ -101,7 +101,7 @@ Checks the API status.
 ```json
 {
   "status": "OK",
-  "message": "anyompt API is running"
+  "message": "prompthor API is running"
 }
 ```
 
@@ -131,7 +131,7 @@ This project follows Clean Architecture principles:
 ## 📁 Project Structure
 
 ```
-anyompt/
+prompthor/
 ├── cmd/                  # Application entry points
 │   └── server/           # Main server
 ├── config/               # Configuration

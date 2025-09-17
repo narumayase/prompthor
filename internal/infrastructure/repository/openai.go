@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"anyompt/internal/domain"
-	"anyompt/internal/infrastructure/client"
 	"context"
 	"fmt"
 	"github.com/sashabaranov/go-openai"
+	"prompthor/internal/domain"
+	"prompthor/internal/infrastructure/client"
 )
 
 // OpenAIRepository implements LLMRepository using OpenAI API

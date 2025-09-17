@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"anyompt/config"
-	"anyompt/internal/domain"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -10,6 +8,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net/http"
+	"prompthor/config"
+	"prompthor/internal/domain"
 )
 
 // HTTPClient is an interface for an HTTP client.

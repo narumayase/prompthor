@@ -1,9 +1,9 @@
 package main
 
 import (
-	"anyompt/config"
-	"anyompt/internal/infrastructure/repository"
 	"github.com/stretchr/testify/assert"
+	"prompthor/config"
+	"prompthor/internal/infrastructure/repository"
 	"testing"
 )
 

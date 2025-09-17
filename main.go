@@ -1,16 +1,16 @@
 package main
 
 import (
-	"anyompt/cmd/server"
-	"anyompt/config"
-	"anyompt/internal/application"
-	"anyompt/internal/domain"
-	"anyompt/internal/infrastructure/client"
-	"anyompt/internal/infrastructure/repository"
 	"fmt"
 	anysherhttp "github.com/narumayase/anysher/http"
 	"github.com/rs/zerolog/log"
 	"net/http"
+	"prompthor/cmd/server"
+	"prompthor/config"
+	"prompthor/internal/application"
+	"prompthor/internal/domain"
+	"prompthor/internal/infrastructure/client"
+	"prompthor/internal/infrastructure/repository"
 )
 
 func main() {

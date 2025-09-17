@@ -1,11 +1,11 @@
 package http
 
 import (
-	"anyompt/internal/domain"
 	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"prompthor/internal/domain"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -51,7 +51,7 @@ func TestRouter_HealthEndpoint(t *testing.T) {
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)
 		assert.Equal(t, "OK", response["status"])
-		assert.Equal(t, "anyompt API is running", response["message"])
+		assert.Equal(t, "prompthor API is running", response["message"])
 	})
 
 	t.Run("health endpoint with different methods", func(t *testing.T) {

@@ -1,9 +1,9 @@
 package application
 
 import (
-	"anyompt/internal/domain"
 	"context"
 	"github.com/rs/zerolog/log"
+	"prompthor/internal/domain"
 )
 
 // ChatUseCaseImpl implements ChatUseCase

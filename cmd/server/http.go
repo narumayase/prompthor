@@ -1,13 +1,13 @@
 package server
 
 import (
-	"anyompt/config"
 	"errors"
 	"log"
 	"net/http"
+	"prompthor/config"
 
-	"anyompt/internal/domain"
-	httphandler "anyompt/internal/interfaces/http"
+	"prompthor/internal/domain"
+	httphandler "prompthor/internal/interfaces/http"
 )
 
 func Run(config config.Config, usecase domain.ChatUseCase) {

@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"anyompt/config"
-	"anyompt/internal/domain"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -11,6 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
+	"prompthor/config"
+	"prompthor/internal/domain"
 	"testing"
 )
 

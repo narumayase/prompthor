@@ -1,11 +1,11 @@
 package http
 
 import (
-	"anyompt/internal/domain"
-	"anyompt/internal/interfaces/http/handler"
 	"github.com/gin-gonic/gin"
 	"github.com/narumayase/anysher/middleware"
 	"github.com/narumayase/anysher/middleware/gateway"
+	"prompthor/internal/domain"
+	"prompthor/internal/interfaces/http/handler"
 )
 
 // SetupRouter configures the API routes
@@ -31,7 +31,7 @@ func SetupRouter(chatUseCase domain.ChatUseCase) *gin.Engine {
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status":  "OK",
-			"message": "anyompt API is running",
+			"message": "prompthor API is running",
 		})
 	})
 	return router
